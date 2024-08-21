@@ -1,0 +1,14 @@
+{
+  "Servers": {
+      "1": {
+          "Name": "Temporal",
+          "Group": "Servers",
+          "Host": "temporal-postgresql",
+          "Port": 5432,
+          "MaintenanceDB": "postgres",
+          "Username": "temporal",
+          "PassFile": "/pgpass",
+          "SSLMode": "prefer"
+      }
+  }
+}
