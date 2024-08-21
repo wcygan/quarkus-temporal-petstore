@@ -2,14 +2,15 @@ package com.mycompany.order.purchasing.gateway.app.filters;
 
 import java.util.UUID;
 
+import jakarta.inject.Inject;
+import jakarta.ws.rs.container.ContainerRequestContext;
+
 import org.jboss.logmanager.MDC;
 import org.jboss.resteasy.reactive.server.ServerRequestFilter;
 import org.jboss.resteasy.reactive.server.ServerResponseFilter;
 
 import io.quarkus.security.identity.SecurityIdentity;
 import io.vertx.ext.web.RoutingContext;
-import jakarta.inject.Inject;
-import jakarta.ws.rs.container.ContainerRequestContext;
 
 /**
  * Utility class for managing request-related information using JBossLog MDC
@@ -29,18 +30,23 @@ public class RequestIdFilters {
      * Key for request IP address stored in the MDC context.
      */
     public static final String REQUEST_IP_MDC_KEY = "X-Request-Address";
-    
+
     /**
      * Key for request username store in the MDC context.
      */
     public static final String REQUEST_USER_MDC_KEY = "X-Remote-User";
 
     /**
+     * Key for request hostname stored in the MDC context.
+     */
+    public static final String REQUEST_HOSTNAME_MDC_KEY = "X-Hostname";
+
+    /**
      * Injects the Vert.x RoutingContext to access the request object.
      */
     @Inject
     RoutingContext request;
-    
+
     @Inject
     SecurityIdentity securityContext;
 
@@ -52,21 +58,24 @@ public class RequestIdFilters {
      */
     @ServerRequestFilter
     public void addRequestInformation(ContainerRequestContext crc) {
-        
+
         // Generate a unique request ID
         String requestId = UUID.randomUUID().toString();
-        
+
         // Retrieve IP address from the incoming request
         String ipAddress = request.request().remoteAddress().hostAddress();
 
-        
-        // Get the logged  in user (if any)
+        // Get the logged in user (if any)
         String loggedInUser = extractUsername(securityContext);
-        
+
+        // Get machine name
+        String hostName = getHostname();
+
         // Add request ID and IP address to the MDC context
         MDC.put(REQUEST_ID_MDC_KEY, requestId);
         MDC.put(REQUEST_IP_MDC_KEY, ipAddress);
         MDC.put(REQUEST_USER_MDC_KEY, loggedInUser);
+        MDC.put(REQUEST_HOSTNAME_MDC_KEY, hostName);
     }
 
     /**
@@ -75,11 +84,11 @@ public class RequestIdFilters {
      */
     @ServerResponseFilter
     public void clearRequestInformation() {
-        
+
         // Clear MDC context to avoid memory leaks
         MDC.clear();
     }
-    
+
     /**
      * Retrieves the username from the provided SecurityIdentity.
      * If the username or the security identity itself is null or empty,
@@ -97,5 +106,19 @@ public class RequestIdFilters {
             }
         }
         return "anonymous";
+    }
+
+    /**
+     * Get the host name of the computer
+     * 
+     * @return Value stored in the HOSTNAME or COMPUTERNAME env variables
+     */
+    public static String getHostname() {
+        String hostname = System.getenv("COMPUTERNAME"); // On Windows
+        if (hostname == null || hostname.isEmpty()) {
+            hostname = System.getenv("HOSTNAME"); // On Unix/Linux
+        }
+
+        return hostname;
     }
 }

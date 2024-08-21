@@ -3,14 +3,10 @@ package com.mycompany.order.purchasing.repository;
 import java.util.Optional;
 import java.util.UUID;
 
-import com.mycompany.order.purchasing.entity.OrderEntity;
-
 import jakarta.enterprise.context.ApplicationScoped;
 
-/**
- *
- 
- */
+import com.mycompany.order.purchasing.entity.OrderEntity;
+
 @ApplicationScoped
 public class OrderRepository extends CustomIDBaseRepository<OrderEntity, UUID> {
 
@@ -19,7 +15,7 @@ public class OrderRepository extends CustomIDBaseRepository<OrderEntity, UUID> {
      *
      * @param orderNumber The order number to search for.
      * @return The LicenseOrderEntity with or without line items based on the
-     * flag.
+     *         flag.
      */
     public Optional<OrderEntity> findByOrderNumber(String orderNumber) {
         return find("orderNumber = ?1", orderNumber).firstResultOptional();
@@ -35,5 +31,5 @@ public class OrderRepository extends CustomIDBaseRepository<OrderEntity, UUID> {
         return find("transactionId = ?1", transactionId)
                 .firstResultOptional();
     }
-    
+
 }

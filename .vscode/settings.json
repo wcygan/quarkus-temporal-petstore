@@ -1,4 +1,12 @@
 {
-    "java.compile.nullAnalysis.mode": "automatic",
-    "java.configuration.updateBuildConfiguration": "interactive"
+  "java.compile.nullAnalysis.mode": "automatic",
+  "java.configuration.updateBuildConfiguration": "interactive",
+  "java.completion.importOrder": ["java", "jakarta", "javax", "org", "com", "io", "lombok"],
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "explicit"
+  },
+  "[java]": {
+    "editor.defaultFormatter": "redhat.java"
+  }
 }

@@ -1,24 +1,25 @@
 package com.mycompany.order.purchasing.shared.models.json;
 
+import java.time.ZonedDateTime;
+import java.util.UUID;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
-import java.time.ZonedDateTime;
-import java.util.UUID;
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.jackson.Jacksonized;
 
-/**
- *
- 
- */
 @Builder
 @Getter
 @ToString
 @Jacksonized
 public class OrderErrorEmailNotificationRequest {
+
+    @Builder.Default
+    private final String type = "error";
 
     @NotBlank
     private final String customerEmail;
@@ -28,7 +29,7 @@ public class OrderErrorEmailNotificationRequest {
 
     @NotNull
     private final UUID transactionNumber;
-    
-     @PastOrPresent
+
+    @PastOrPresent
     private final ZonedDateTime orderDate;
 }

@@ -1,12 +1,16 @@
 package com.mycompany.order.purchasing.notification.service;
 
 import java.util.List;
+import java.util.Map;
 
-import org.jboss.logging.Logger;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mycompany.order.purchasing.notification.mailer.EmailNotificationRequest;
-import com.mycompany.order.purchasing.notification.mailer.EmailService;
+import com.mycompany.order.purchasing.notification.EmailNotificationRequest;
+import com.mycompany.order.purchasing.notification.EmailService;
 import com.mycompany.order.purchasing.shared.models.json.OrderErrorEmailNotificationRequest;
 import com.mycompany.order.purchasing.shared.models.json.OrderReceivedEmailNotificationRequest;
 import com.mycompany.order.purchasing.shared.models.json.OrderSuccessEmailNotificationRequest;
@@ -15,17 +19,14 @@ import io.micrometer.core.annotation.Counted;
 import io.micrometer.core.annotation.Timed;
 import io.quarkus.qute.CheckedTemplate;
 import io.quarkus.qute.TemplateInstance;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
+
+import lombok.extern.jbosslog.JBossLog;
 
 /**
  * Handles order notifications (SMTP, etc)
- * 
- 
  */
 @ApplicationScoped
+@JBossLog
 public class OrderNotificationService {
 
     @Inject
@@ -49,9 +50,6 @@ public class OrderNotificationService {
 
     }
 
-    @Inject
-    Logger log;
-
     /**
      * Sends an email stating the initial order has been accepted
      *
@@ -67,6 +65,7 @@ public class OrderNotificationService {
                 .recipients(List.of(request.getCustomerEmail()))
                 .html(true)
                 .content(Templates.orderReceived(request).render())
+                .headers(Map.of("X-Tags", List.of("Order, Received")))
                 .build();
 
         // Send it
@@ -99,6 +98,7 @@ public class OrderNotificationService {
                 .recipients(List.of(request.getCustomerEmail()))
                 .html(true)
                 .content(Templates.orderError(request).render())
+                .headers(Map.of("X-Tags", List.of("Order, Error")))
                 .build();
 
         // Send it
@@ -120,16 +120,17 @@ public class OrderNotificationService {
 
         // Send good case
         EmailNotificationRequest emailReq = EmailNotificationRequest.builder()
-                    .subject("Order Completed - Order #%s".formatted(request.getOrderNumber()))
-                    .recipients(List.of(request.getCustomerEmail()))
-                    .html(true)
-                    .content(Templates.orderSuccess(request).render())
-                    .build();
-        
+                .subject("Order Completed - Order #%s".formatted(request.getOrderNumber()))
+                .recipients(List.of(request.getCustomerEmail()))
+                .html(true)
+                .content(Templates.orderSuccess(request).render())
+                .headers(Map.of("X-Tags", List.of("Order, Success")))
+                .build();
+
         // send the mail
         log.infof("Sending order completed email to %s for order number %s with TX id %s", request.getCustomerEmail(),
                 request.getOrderNumber(), request.getTransactionNumber());
-        
+
         emailService.sendEmail(emailReq);
 
     }

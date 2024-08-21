@@ -1,20 +1,18 @@
 package com.mycompany.order.purchasing.payment.temporal;
 
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+
 import com.mycompany.order.purchasing.payment.service.PaymentService;
 import com.mycompany.order.purchasing.shared.activities.payment.PaymentActivities;
 import com.mycompany.order.purchasing.shared.models.json.DebitCreditCardRequest;
 import com.mycompany.order.purchasing.shared.models.json.DebitCreditCardResponse;
 import com.mycompany.order.purchasing.shared.models.json.ReverseActionsForTransactionRequest;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
-
 /**
- * Implementation of the Payment Activity
- *
- 
+ * Implementation of the Payment Activity.
  */
 @ApplicationScoped
 public class PaymentActivitiesImpl implements PaymentActivities {
@@ -26,7 +24,7 @@ public class PaymentActivitiesImpl implements PaymentActivities {
      * Attempt to debit the credit card
      *
      * @param request {@link DebitCreditCardRequest}
-     * @return {@link DebitCreditCardResponse} 
+     * @return {@link DebitCreditCardResponse}
      */
     @Override
     public DebitCreditCardResponse debitCreditCard(@Valid @NotNull DebitCreditCardRequest request) {

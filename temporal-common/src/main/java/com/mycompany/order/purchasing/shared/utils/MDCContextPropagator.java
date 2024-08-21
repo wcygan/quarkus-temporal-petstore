@@ -10,25 +10,18 @@ import io.temporal.common.context.ContextPropagator;
 import io.temporal.common.converter.GlobalDataConverter;
 
 /**
- * A {@link ContextPropagator} implementation that propagates the SLF4J MDC (Mapped Diagnostic Context)
- * across Temporal workflow and activity boundaries. This class ensures that MDC entries with keys
- * starting with "X-" are propagated.
- * 
- * <p>Usage:
- * <pre>
- * {@code
- * MDCContextPropagator contextPropagator = new MDCContextPropagator();
- * }
- * </pre>
- * 
- 
+ * A {@link ContextPropagator} implementation that propagates the SLF4J MDC
+ * (Mapped Diagnostic Context) across Temporal workflow and activity boundaries.
+ * This class ensures that MDC entries with keys starting with "X-" are
+ * propagated.
  */
 public class MDCContextPropagator implements ContextPropagator {
 
     /**
      * Gets the name of the context propagator.
      *
-     * @return the name of the context propagator, which is the class name.
+     * @return the name of the context propagator, which is the fully qualified
+     *         class name.
      */
     @Override
     public String getName() {
@@ -36,21 +29,19 @@ public class MDCContextPropagator implements ContextPropagator {
     }
 
     /**
-     * Gets the current MDC context to be propagated.
+     * Retrieves the current MDC context to be propagated.
      *
-     * @return a map containing the current MDC context, filtered to include only entries with keys
-     *         starting with "X-".
+     * @return a map containing the current MDC context, filtered to include only
+     *         entries with keys starting with "X-".
      */
     @Override
     public Object getCurrentContext() {
         Map<String, String> context = new HashMap<>();
-        if (MDC.getCopyOfContextMap() == null) {
-            return context;
-        }
-        for (Map.Entry<String, String> entry : MDC.getCopyOfContextMap().entrySet()) {
-            if (entry.getKey().startsWith("X-")) {
-                context.put(entry.getKey(), entry.getValue());
-            }
+        Map<String, String> mdcContext = MDC.getCopyOfContextMap();
+        if (mdcContext != null) {
+            mdcContext.entrySet().stream()
+                    .filter(entry -> entry.getKey().startsWith("X-"))
+                    .forEach(entry -> context.put(entry.getKey(), entry.getValue()));
         }
         return context;
     }
@@ -62,9 +53,10 @@ public class MDCContextPropagator implements ContextPropagator {
      */
     @Override
     public void setCurrentContext(Object context) {
-        Map<String, String> contextMap = (Map<String, String>) context;
-        for (Map.Entry<String, String> entry : contextMap.entrySet()) {
-            MDC.put(entry.getKey(), entry.getValue());
+        if (context instanceof Map) {
+            @SuppressWarnings("unchecked")
+            Map<String, String> contextMap = (Map<String, String>) context;
+            contextMap.forEach(MDC::put);
         }
     }
 
@@ -76,12 +68,14 @@ public class MDCContextPropagator implements ContextPropagator {
      */
     @Override
     public Map<String, Payload> serializeContext(Object context) {
+        if (!(context instanceof Map)) {
+            return new HashMap<>();
+        }
+        @SuppressWarnings("unchecked")
         Map<String, String> contextMap = (Map<String, String>) context;
         Map<String, Payload> serializedContext = new HashMap<>();
-        for (Map.Entry<String, String> entry : contextMap.entrySet()) {
-            serializedContext.put(
-                    entry.getKey(), GlobalDataConverter.get().toPayload(entry.getValue()).get());
-        }
+        contextMap.forEach((key, value) -> GlobalDataConverter.get().toPayload(value)
+                .ifPresent(payload -> serializedContext.put(key, payload)));
         return serializedContext;
     }
 
@@ -94,12 +88,8 @@ public class MDCContextPropagator implements ContextPropagator {
     @Override
     public Object deserializeContext(Map<String, Payload> context) {
         Map<String, String> contextMap = new HashMap<>();
-        for (Map.Entry<String, Payload> entry : context.entrySet()) {
-            contextMap.put(
-                    entry.getKey(),
-                    GlobalDataConverter.get()
-                            .fromPayload(entry.getValue(), String.class, String.class));
-        }
+        context.forEach((key, payload) -> contextMap.put(key,
+                GlobalDataConverter.get().fromPayload(payload, String.class, String.class)));
         return contextMap;
     }
 }

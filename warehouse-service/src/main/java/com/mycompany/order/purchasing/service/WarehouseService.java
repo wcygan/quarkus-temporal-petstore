@@ -2,25 +2,20 @@ package com.mycompany.order.purchasing.service;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.jboss.logging.Logger;
+import jakarta.enterprise.context.ApplicationScoped;
 
 import com.mycompany.order.purchasing.shared.models.exceptions.OutOfStockException;
 import com.mycompany.order.purchasing.shared.models.json.CheckInventoryRequest;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
+import lombok.extern.jbosslog.JBossLog;
 
 /**
  * Warehouse operations
- * 
- 
  */
 @ApplicationScoped
+@JBossLog
 public class WarehouseService {
 
-    @Inject
-    Logger log;
-    
     // Counter for demo
     private AtomicInteger counter = new AtomicInteger(0);
 
@@ -32,7 +27,7 @@ public class WarehouseService {
      */
     public void checkInventory(CheckInventoryRequest request) {
         log.infof("Checking inventory for %d products", request.getProducts().size());
-        
+
         /**
          * Maybe for the demo we can randomly throw the OutofStock exception
          * so we can simulate and show error failures
@@ -42,10 +37,9 @@ public class WarehouseService {
         if (counter.incrementAndGet() % 2 == 0) {
             throw new OutOfStockException("Items are out of stock");
         }
-        
+
         log.infof("All %d products are in stock", request.getProducts().size());
-        
+
     }
 
-    
 }

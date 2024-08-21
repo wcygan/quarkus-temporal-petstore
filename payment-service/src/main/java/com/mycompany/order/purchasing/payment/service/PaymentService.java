@@ -3,7 +3,9 @@ package com.mycompany.order.purchasing.payment.service;
 import java.util.Objects;
 import java.util.UUID;
 
-import org.jboss.logging.Logger;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 import com.mycompany.order.purchasing.shared.models.exceptions.BadPaymentInfoException;
 import com.mycompany.order.purchasing.shared.models.exceptions.PaymentDeclinedException;
@@ -11,21 +13,14 @@ import com.mycompany.order.purchasing.shared.models.json.DebitCreditCardRequest;
 import com.mycompany.order.purchasing.shared.models.json.DebitCreditCardResponse;
 import com.mycompany.order.purchasing.shared.models.json.ReverseActionsForTransactionRequest;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
+import lombok.extern.jbosslog.JBossLog;
 
 /**
- * Service class which handles credit card processing
- *
- 
+ * Service class which handles credit card processing.
  */
 @ApplicationScoped
+@JBossLog
 public class PaymentService {
-
-    @Inject
-    Logger log;
 
     /**
      * Attempts to reverse a previous transaction for all codes associated with
@@ -58,16 +53,18 @@ public class PaymentService {
     public DebitCreditCardResponse debitAccount(@Valid @NotNull DebitCreditCardRequest request) {
 
         Objects.requireNonNull(request, "DebitCreditCardRequest instance required");
-        log.infof("Attempting to debit %.2f from credit card %s", request.getAmount(), request.getCreditCard().getCardNumber());
-        
+        log.infof("Attempting to debit %.2f from credit card %s", request.getAmount(),
+                request.getCreditCard().getCardNumber());
+
         /**
-         * This is where you'd perform the charging of the credit card and then 
+         * This is where you'd perform the charging of the credit card and then
          * return some response information.
          * 
-         * In this instance I just return an authorization code, the charged amount, and original
+         * In this instance I just return an authorization code, the charged amount, and
+         * original
          * credit card information.
          */
-        
+
         /**
          * For demo, you could throw an bad payment info if the email isn't good
          * and another error for any orders over 20 dollars, etc.
@@ -77,7 +74,7 @@ public class PaymentService {
         } else if (request.getAmount() > 20) {
             throw new PaymentDeclinedException("Order amount exceeds credit limit");
         }
-        
+
         // Return the response
         return DebitCreditCardResponse.builder()
                 .authorizationCode(UUID.randomUUID())

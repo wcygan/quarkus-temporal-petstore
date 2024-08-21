@@ -12,9 +12,8 @@ import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 /**
  * Base repository providing common methods for saving or updating entities.
  *
- * @param <T> the type of the entity managed by this repository
+ * @param <T>  the type of the entity managed by this repository
  * @param <ID> the type of primary key
- 
  */
 public class CustomIDBaseRepository<T, ID> implements PanacheRepositoryBase<T, ID> {
 

@@ -1,17 +1,15 @@
 package com.mycompany.order.purchasing.temporal;
 
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+
 import com.mycompany.order.purchasing.service.WarehouseService;
 import com.mycompany.order.purchasing.shared.activities.warehouse.WarehouseActivities;
 import com.mycompany.order.purchasing.shared.models.exceptions.OutOfStockException;
 import com.mycompany.order.purchasing.shared.models.json.CheckInventoryRequest;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
-
 /**
- * Implementation of the Warehouse Activity
- *
- 
+ * Implementation of the Warehouse Activity.
  */
 @ApplicationScoped
 public class WarehouseActivitiesImpl implements WarehouseActivities {
@@ -27,7 +25,7 @@ public class WarehouseActivitiesImpl implements WarehouseActivities {
      */
     @Override
     public void checkInventory(CheckInventoryRequest request) {
-        
+
         /**
          * This is where you'd do your inventory logic
          * 
@@ -38,9 +36,7 @@ public class WarehouseActivitiesImpl implements WarehouseActivities {
          * activity since we want to fail the workflow quick
          */
         service.checkInventory(request);
-        
+
     }
-    
-    
-   
+
 }

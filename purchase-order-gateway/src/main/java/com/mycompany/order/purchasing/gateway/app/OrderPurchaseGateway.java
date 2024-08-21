@@ -3,39 +3,38 @@ package com.mycompany.order.purchasing.gateway.app;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
+import jakarta.inject.Inject;
+import jakarta.validation.Valid;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.Response;
+
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logmanager.MDC;
 
 import com.mycompany.order.purchasing.gateway.app.filters.RequestIdFilters;
-import com.mycompany.order.purchasing.gateway.app.json.OrderPurchaseContext;
-import com.mycompany.order.purchasing.gateway.app.workflows.OrderPurchaseWorkflow;
+import com.mycompany.order.purchasing.gateway.app.temporal.OrderPurchaseWorkflow;
 import com.mycompany.order.purchasing.shared.models.json.OrderPurchaseRequest;
 import com.mycompany.order.purchasing.shared.models.json.WorkflowInitiationResponse;
 
 import io.micrometer.core.annotation.Timed;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
-import jakarta.inject.Inject;
-import jakarta.validation.Valid;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.core.Response;
+
 import lombok.extern.jbosslog.JBossLog;
 
 /**
- * Entry into the ordering system
- * 
- 
+ * Entry into the ordering system.
  */
 @Path("/api/v1/opg")
 @JBossLog
 public class OrderPurchaseGateway {
 
-    @ConfigProperty(name = "temporal.order.purchase.workflow.task.queue")
+    @ConfigProperty(name = "quarkus.temporal.worker.task-queue")
     String taskQueue;
 
     @Inject
-    WorkflowApplicationObserver observer;
+    WorkflowClient client;
 
     /**
      * This method is used to start the product purchase process and will start
@@ -57,10 +56,10 @@ public class OrderPurchaseGateway {
             UUID requestId = UUID.fromString(MDC.get(RequestIdFilters.REQUEST_ID_MDC_KEY));
 
             // Start the workflow
-            OrderPurchaseWorkflow workflow = observer.getClient().newWorkflowStub(OrderPurchaseWorkflow.class, WorkflowOptions.newBuilder()
+            OrderPurchaseWorkflow workflow = client.newWorkflowStub(OrderPurchaseWorkflow.class,
+                    WorkflowOptions.newBuilder()
                             .setWorkflowId("OrderPurchase-" + requestId.toString())
-                            .setTaskQueue(taskQueue).build()
-            );
+                            .setTaskQueue(taskQueue).build());
 
             // Create the context
             OrderPurchaseContext ctx = OrderPurchaseContext.builder()

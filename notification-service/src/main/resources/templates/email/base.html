@@ -1,132 +1,147 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>{#insert title}Default Title{/}</title>
-        <style>
-            body {
-                font-family: Arial, sans-serif;
-                background-color: #f4f4f4;
-                margin: 0;
-                padding: 0;
-            }
-            .email-container {
-                max-width: 600px;
-                margin: 20px auto;
-                background-color: #ffffff;
-                padding: 20px;
-                border: 1px solid #dddddd;
-            }
-            .header {
-                text-align: center;
-                padding: 10px 0;
-                background-color: #000000; /* Blue background */
-                color: #ffffff; /* Set text color if needed */
-            }
-            .header img {
-                width: 100%; /* Set the width to fill the container */
-                height: auto; /* Maintain aspect ratio */
-                display: block; /* Ensure the image behaves as a block element */
-                margin: 0; /* Remove any default margin */
-                padding: 0; /* Remove any default padding */
-            }
-            .content {
-                margin: 20px 0;
-            }
-            .content p {
-                font-size: 16px;
-                line-height: 1.5;
-            }
-            .content li ul {
-                margin-top: 10px;
-            }
-            .content li {
-                margin-bottom: 10px; /* Added spacing between list items */
-                font-size: 16px;
-            }
-            .footer {
-                text-align: center;
-                font-size: 12px;
-                color: #ffffff; /* Text color set to white for better visibility on black background */
-                background-color: #000000;
-                padding-bottom: 20px;
-                box-sizing: border-box; /* Ensure padding is included in height calculation */
-                display: flex;
-                flex-direction: column;
-                justify-content: space-between;
-            }
-            .footer img {
-                max-width: 100%; /* Ensure image does not exceed container width */
-                height: auto; /* Maintain aspect ratio */
-                margin-bottom: 10px; /* Optional: Space between logo and text */
-            }
-            .footer p {
-                margin: 5px 0; /* Adjust margin for better spacing */
-            }
-            .footer a {
-                color: #3333ff;
-                text-decoration: none;
-            }
-            .data-table {
-                width: 100%;
-                border-collapse: collapse;
-                margin: 20px 0;
-                overflow-x: auto; /* Enable horizontal scrolling on smaller screens */
-            }
-            .data-table th, .data-table td {
-                border: 1px solid #dddddd;
-                padding: 8px;
-                text-align: center;
-            }
-            .data-table th {
-                background-color: #f2f2f2;
-                text-align: center; /* Center align text in table headers */
-            }
-            .copyright-symbol {
-                font-size: 8px;
-            }
-            .registered-symbol::after {
-                content: "\00AE"; /* Unicode for registered trademark symbol */
-                font-size: 8px;
-                vertical-align: super; /* Optional: to position the symbol as superscript */
-            }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{#insert title}Default Title{/}</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+      }
+      .email-container {
+        max-width: 600px;
+        margin: 20px auto;
+        background-color: #ffffff;
+        padding: 20px;
+        border: 1px solid #dddddd;
+      }
+      .header {
+        text-align: center;
+        padding: 10px 0;
+        background-color: #000000; /* Black background */
+        color: #ffffff; /* Set text color if needed */
+      }
+      .header-normal {
+        background-color: #2807cd; /* Blue background */
+        color: #ffffff; /* Set text color if needed */
+      }
+      .header-success {
+        background-color: #008000; /* Green background */
+        color: #ffffff; /* Set text color if needed */
+      }
+      .header-error {
+        background-color: #ff0000; /* Red background */
+        color: #ffffff; /* Set text color if needed */
+      }
+      .header img {
+        width: 100%; /* Set the width to fill the container */
+        height: auto; /* Maintain aspect ratio */
+        display: block; /* Ensure the image behaves as a block element */
+        margin: 0; /* Remove any default margin */
+        padding: 0; /* Remove any default padding */
+      }
+      .content {
+        margin: 20px 0;
+      }
+      .content p {
+        font-size: 16px;
+        line-height: 1.5;
+      }
+      .content li ul {
+        margin-top: 10px;
+      }
+      .content li {
+        margin-bottom: 10px; /* Added spacing between list items */
+        font-size: 16px;
+      }
+      .footer {
+        text-align: center;
+        font-size: 12px;
+        color: #ffffff; /* Text color set to white for better visibility on black background */
+        background-color: #000000;
+        padding-bottom: 20px;
+        box-sizing: border-box; /* Ensure padding is included in height calculation */
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+      .footer img {
+        max-width: 100%; /* Ensure image does not exceed container width */
+        height: auto; /* Maintain aspect ratio */
+        margin-bottom: 10px; /* Optional: Space between logo and text */
+      }
+      .footer p {
+        margin: 5px 0; /* Adjust margin for better spacing */
+      }
+      .footer a {
+        color: #3333ff;
+        text-decoration: none;
+      }
+      .data-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+        overflow-x: auto; /* Enable horizontal scrolling on smaller screens */
+      }
+      .data-table th,
+      .data-table td {
+        border: 1px solid #dddddd;
+        padding: 8px;
+        text-align: center;
+      }
+      .data-table th {
+        background-color: #f2f2f2;
+        text-align: center; /* Center align text in table headers */
+      }
+      .copyright-symbol {
+        font-size: 8px;
+      }
+      .registered-symbol::after {
+        content: "\00AE"; /* Unicode for registered trademark symbol */
+        font-size: 8px;
+        vertical-align: super; /* Optional: to position the symbol as superscript */
+      }
 
-            /* Media query for mobile devices */
-            @media (max-width: 600px) {
-                .footer {
-                    height: auto; /* Allow footer to grow taller */
-                    padding-bottom: 40px; /* Add additional bottom padding on mobile */
-                }
-                .footer img {
-                    margin-bottom: 20px; /* Increase space between logo and text on mobile */
-                }
-                .data-table {
-                    width: 100%;
-                    overflow-x: auto; /* Enable horizontal scrolling on small screens */
-                }
-            }
-        </style>
-    </head>
-    <body>
-        <div class="email-container">
-            <div class="header">
-                <p>MyCompany Logo</p>
-            </div>
-            <div class="content">
-                {#insert body}No Body!{/}
-            </div>
-            <div class="footer">
-                <div>
-                    <p>123 Any St.<br>
-                        Anytown, PA, 12345<br>
-                        USA</p>
-                    <p>Phone: +1 (111) 222.3333<br>
-                        Fax: +1  (222) 333.4444</p>
-                    <p>If you have any questions or need further assistance, please visit our <a href="https://www.yourcompany.com/support">support page</a>.</p>
-                    <p>&copy; 2024 MyCompany. All rights reserved.</p>
-                </div>
-            </div>
+      /* Media query for mobile devices */
+      @media (max-width: 600px) {
+        .footer {
+          height: auto; /* Allow footer to grow taller */
+          padding-bottom: 40px; /* Add additional bottom padding on mobile */
+        }
+        .footer img {
+          margin-bottom: 20px; /* Increase space between logo and text on mobile */
+        }
+        .data-table {
+          width: 100%;
+          overflow-x: auto; /* Enable horizontal scrolling on small screens */
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="email-container">
+      <div class="header header-{item.type}">
+        <p>MyCompany Logo</p>
+      </div>
+      <div class="content">{#insert body}No Body!{/}</div>
+      <div class="footer">
+        <div>
+          <p>
+            123 Any St.<br />
+            Anytown, PA, 12345<br />
+            USA
+          </p>
+          <p>
+            Phone: +1 (111) 222.3333<br />
+            Fax: +1 (222) 333.4444
+          </p>
+          <p>If you have any questions or need further assistance, please visit our <a href="https://www.yourcompany.com/support">support page</a>.</p>
+          <p>&copy; 2024 MyCompany. All rights reserved.</p>
         </div>
-    </body>
+      </div>
+    </div>
+  </body>
 </html>

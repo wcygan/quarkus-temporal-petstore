@@ -1,4 +1,4 @@
-package com.mycompany.order.purchasing.notification.mailer;
+package com.mycompany.order.purchasing.notification;
 
 import java.util.List;
 import java.util.Map;
@@ -7,17 +7,16 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.jackson.Jacksonized;
 
 /**
- * Email notification request object used to send emails
+ * Email notification request object used to send emails.
  * <p>
- * Supports the Quarkus Mailer send method parameters
- * 
- 
+ * Supports the Quarkus Mailer send method parameters.
  */
 @Builder
 @Getter

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.mycompany</groupId>
     <artifactId>order-purchasing-parent</artifactId>
@@ -16,16 +17,16 @@
         <module>purchase-order-gateway</module>
     </modules>
     <properties>
-        <compiler-plugin.version>3.12.1</compiler-plugin.version>
+
         <maven.compiler.release>17</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-        <quarkus.platform.version>3.12.3</quarkus.platform.version>
+        <quarkus.platform.version>3.13.3</quarkus.platform.version>
         <skipITs>true</skipITs>
+        <compiler-plugin.version>3.13.0</compiler-plugin.version>
         <surefire-plugin.version>3.2.5</surefire-plugin.version>
-        <version.temporal.sdk>1.24.1</version.temporal.sdk>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -37,40 +38,19 @@
                 <scope>import</scope>
             </dependency>
             <dependency>
+                <groupId>io.quarkiverse.temporal</groupId>
+                <artifactId>quarkus-temporal</artifactId>
+                <version>0.0.4</version>
+            </dependency>
+            <dependency>
                 <groupId>com.tietoevry.quarkus</groupId>
                 <artifactId>quarkus-resteasy-problem</artifactId>
                 <version>3.9.0</version>
             </dependency>
             <dependency>
-                <groupId>com.mycompany.quarkus</groupId>
-                <artifactId>mailer-utils</artifactId>
-                <version>1.0-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>com.mycompany.order.purchasing</groupId>
-                <artifactId>shared-models</artifactId>
-                <version>1.0-SNAPSHOT</version>
-            </dependency>
-            <dependency>
                 <groupId>com.mycompany.order.purchasing</groupId>
                 <artifactId>temporal-common</artifactId>
                 <version>1.0-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>com.mycompany.temporal</groupId>
-                <artifactId>temporal-common-utils</artifactId>
-                <version>1.0-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>io.temporal</groupId>
-                <artifactId>temporal-sdk</artifactId>
-                <version>${version.temporal.sdk}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.temporal</groupId>
-                <artifactId>temporal-testing</artifactId>
-                <version>${version.temporal.sdk}</version>
-                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.projectlombok</groupId>
@@ -81,6 +61,14 @@
         </dependencies>
     </dependencyManagement>
     <dependencies>
+        <dependency>
+            <groupId>io.quarkiverse.temporal</groupId>
+            <artifactId>quarkus-temporal</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>

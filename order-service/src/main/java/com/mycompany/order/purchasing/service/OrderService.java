@@ -5,7 +5,10 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.jboss.logging.Logger;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.persistence.LockModeType;
+import jakarta.transaction.Transactional;
 
 import com.mycompany.order.purchasing.entity.OrderEntity;
 import com.mycompany.order.purchasing.entity.OrderLineItemEntity;
@@ -16,24 +19,27 @@ import com.mycompany.order.purchasing.shared.models.json.CreateOrderResponse;
 import com.mycompany.order.purchasing.shared.models.json.MarkOrderCompleteRequest;
 import com.mycompany.order.purchasing.shared.models.json.MarkOrderFailedRequest;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
-import jakarta.persistence.LockModeType;
-import jakarta.transaction.Transactional;
+import lombok.extern.jbosslog.JBossLog;
 
 /**
- *
- 
+ * Service class for managing order-related operations.
+ * This class handles creating orders, marking orders as complete or failed,
+ * and other order-related business logic.
  */
 @ApplicationScoped
+@JBossLog
 public class OrderService {
-
-    @Inject
-    Logger log;
 
     @Inject
     OrderRepository orderRepo;
 
+    /**
+     * Marks an order as complete.
+     *
+     * @param ctx The request containing information to mark the order as complete.
+     * @throws IllegalArgumentException if the order is not found or if there's an
+     *                                  error saving the record.
+     */
     @Transactional
     public void markOrderAsComplete(MarkOrderCompleteRequest ctx) {
         log.infof("Attempting to save order %s with TX id %s", ctx.getOrderNumber(),
@@ -45,12 +51,13 @@ public class OrderService {
                 .firstResult();
 
         if (record == null) {
-            throw new IllegalArgumentException("Previous order number %s was not found".formatted(ctx.getOrderNumber()));
+            throw new IllegalArgumentException(
+                    "Previous order number %s was not found".formatted(ctx.getOrderNumber()));
         }
 
         // Set order total
         record.setOrderTotal(ctx.getOrderTotal());
-        
+
         // Build line items
         Set<OrderLineItemEntity> lineItems = ctx.getProducts().stream()
                 .map(p -> {
@@ -59,8 +66,7 @@ public class OrderService {
                     lineItem.setQuantity(p.getQuantity());
                     lineItem.setUnitPrice(p.getPrice());
                     return lineItem;
-                }
-                ).collect(Collectors.toSet());
+                }).collect(Collectors.toSet());
 
         // Set the status
         record.setStatus(OrderStatus.COMPLETED);
@@ -80,27 +86,27 @@ public class OrderService {
     }
 
     /**
-     * Create a new order context
-     * <p>
-     * This will be filled in throughout the order process and then be saved
-     * later on
+     * Creates a new order.
      *
-     * @param request {@link CreateOrderRequest}
-     * @return {
-     * @LicenseOrderContext}
+     * @param request The request containing information to create a new order.
+     * @return A CreateOrderResponse containing the details of the created order.
+     * @throws IllegalArgumentException if an order with the same transaction ID
+     *                                  already exists and is not in PENDING state.
      */
     @Transactional
     public CreateOrderResponse createOrder(CreateOrderRequest request) {
 
         // Verify we didn't already try to create an order with the transaction id
-        // This is because the workflow could get replayed and we need to make sure 
-        // we are idompotent
+        // This is because the workflow could get replayed and we need to make sure
+        // we are idempotent
         OrderEntity previousOrder = orderRepo.find("transactionId = ?1",
                 request.getTransactionId()).firstResult();
 
-        // if we are still in PENDING state, something happened and we didn't finish the order
-        // and we are being asked to attempt to finish it (Workflow REplay)
-        // othwise we fail because the order has been completed either successfully or failed
+        // if we are still in PENDING state, something happened and we didn't finish the
+        // order
+        // and we are being asked to attempt to finish it (Workflow Replay)
+        // otherwise we fail because the order has been completed either successfully or
+        // failed
         if (previousOrder != null) {
             if (previousOrder.getStatus() == OrderStatus.PENDING) {
                 log.warnf("Previous transaction found for order number %s with TX id %s...returning previous order"
@@ -114,8 +120,9 @@ public class OrderService {
                         .status(previousOrder.getStatus())
                         .build();
             } else {
-                throw new IllegalArgumentException("Attempted to create a new order with existing order number %s and transaction %s that has been previously completed"
-                        .formatted(previousOrder.getOrderNumber(), previousOrder.getTransactionId()));
+                throw new IllegalArgumentException(
+                        "Attempted to create a new order with existing order number %s and transaction %s that has been previously completed"
+                                .formatted(previousOrder.getOrderNumber(), previousOrder.getTransactionId()));
             }
         }
 
@@ -141,9 +148,11 @@ public class OrderService {
     }
 
     /**
-     * Mark order as failed
+     * Marks an order as failed.
      *
-     * @param request {@link MarkOrderFailedRequest}
+     * @param request The request containing information to mark the order as
+     *                failed.
+     * @throws IllegalArgumentException if the order is not found.
      */
     @Transactional
     public void markOrderAsFailed(MarkOrderFailedRequest request) {
@@ -158,21 +167,23 @@ public class OrderService {
             log.errorf("Marking order as FAILED with TX id %s", request.getTransactionId());
             optionalRecord = orderRepo.findByTransactionId(request.getTransactionId());
         } else {
-            log.errorf("Marking order %s as FAILED with TX id %s", request.getOrderNumber(), request.getTransactionId());
+            log.errorf("Marking order %s as FAILED with TX id %s", request.getOrderNumber(),
+                    request.getTransactionId());
             optionalRecord = orderRepo.findByOrderNumber(request.getOrderNumber());
         }
 
         OrderEntity record = optionalRecord
-                .orElseThrow(() -> new IllegalArgumentException("Previous order for TX %s was not found".formatted(request.getTransactionId())));
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Previous order for TX %s was not found".formatted(request.getTransactionId())));
 
         record.setStatus(OrderStatus.FAILED);
         record.setFailureReason(request.getReason());
     }
 
     /**
-     * Generate a new license order number
+     * Generates a new order number.
      *
-     * @return
+     * @return A string representing the newly generated order number.
      */
     private String generateOrderNumber() {
 

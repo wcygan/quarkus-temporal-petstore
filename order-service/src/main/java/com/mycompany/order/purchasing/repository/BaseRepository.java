@@ -13,7 +13,6 @@ import io.quarkus.hibernate.orm.panache.PanacheRepository;
  * Base repository providing common methods for saving or updating entities.
  *
  * @param <T> the type of the entity managed by this repository
- 
  */
 public class BaseRepository<T> implements PanacheRepository<T> {
 

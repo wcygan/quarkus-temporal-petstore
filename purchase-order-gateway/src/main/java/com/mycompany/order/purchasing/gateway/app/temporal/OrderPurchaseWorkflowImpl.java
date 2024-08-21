@@ -1,13 +1,16 @@
-package com.mycompany.order.purchasing.gateway.app.workflows;
+package com.mycompany.order.purchasing.gateway.app.temporal;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import com.mycompany.order.purchasing.gateway.app.ActivityStubsProvider;
-import com.mycompany.order.purchasing.gateway.app.json.OrderPurchaseContext;
+import com.mycompany.order.purchasing.gateway.app.OrderPurchaseContext;
 import com.mycompany.order.purchasing.shared.activities.order.OrderNotificationActivities;
 import com.mycompany.order.purchasing.shared.activities.order.OrderServiceActivities;
 import com.mycompany.order.purchasing.shared.activities.payment.PaymentActivities;
@@ -36,48 +39,59 @@ import io.temporal.failure.CanceledFailure;
 import io.temporal.failure.TemporalFailure;
 import io.temporal.workflow.Saga;
 import io.temporal.workflow.Workflow;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
+
 import lombok.extern.jbosslog.JBossLog;
 
 /**
- * Demo workflow for a simulated Product order scenario
+ * Implementation of the OrderPurchaseWorkflow interface for simulating a
+ * product order scenario.
  * <p>
- * The steps taken are:
- * <ul>
- * <li> Receive JSON request</li>
- * <li> Send acceptance email</li>
- * <li> Create the initial order record in the DB</li>
- * <li> Calculate the order total</li>
- * <li> Charge the credit card the calculated amount</li>
- * <li> Check the warehouse for inventory </li>
- * <li> Generate a shipping/tracking number <li>
- * <li> Finalize the order with more information and send email</li>
- * </ul>
+ * This workflow orchestrates the following steps:
+ * <ol>
+ * <li>Receive and validate the order request</li>
+ * <li>Send an order acknowledgement email</li>
+ * <li>Create an initial order record in the database</li>
+ * <li>Calculate the total order price</li>
+ * <li>Process the payment by charging the customer's credit card</li>
+ * <li>Check inventory availability</li>
+ * <li>Generate a shipping tracking number</li>
+ * <li>Finalize the order and send a confirmation email</li>
+ * </ol>
+ * <p>
+ * The workflow includes error handling and compensation logic to manage
+ * failures
+ * at various stages of the order process.
  */
 @JBossLog
 public class OrderPurchaseWorkflowImpl implements OrderPurchaseWorkflow {
 
-
     private final PaymentActivities paymentActivity = ActivityStubsProvider.getPaymentActivities();
-    private final OrderNotificationActivities notificationActivity = ActivityStubsProvider.getOrderNotificationActivities();
+    private final OrderNotificationActivities notificationActivity = ActivityStubsProvider
+            .getOrderNotificationActivities();
     private final OrderServiceActivities orderActivity = ActivityStubsProvider.getOrderServiceActivities();
     private final WarehouseActivities warehouseActivity = ActivityStubsProvider.getWarehouseActivities();
     private final ShipperActivities shipperActivity = ActivityStubsProvider.getShipperActivities();
 
     /**
-     * Method to start the workflow
+     * Initiates and executes the order placement workflow.
+     * <p>
+     * This method orchestrates the entire order process, including validation,
+     * payment processing, inventory checking, and order finalization. It also
+     * handles error scenarios and initiates compensation actions when necessary.
      *
-     * @param orderCtx {@link OrderPurchaseContext}
+     * @param orderCtx The context object containing all necessary information for
+     *                 the order.
+     * @throws NullPointerException if orderCtx is null.
+     * @throws TemporalFailure      for workflow-related failures.
      */
     @Override
     public void placeOrder(@Valid @NotNull OrderPurchaseContext orderCtx) {
 
         Objects.requireNonNull(orderCtx, "OrderPurchaseContext is required");
 
-        // Will let us do rollbacks later
+        // Initialize the saga for potential compensations
         Saga saga = new Saga(new Saga.Options.Builder().build());
-        
+
         try {
 
             // 1. Send the acknowledgement of the order request
@@ -92,60 +106,61 @@ public class OrderPurchaseWorkflowImpl implements OrderPurchaseWorkflow {
                     .status(newOrder.getStatus())
                     .build();
 
-            
             // 3. Calculate the order total
             double orderTotal = calculateTotalPrice(orderCtx.getProducts());
-            
+
             // Set the total into the context
             orderCtx = orderCtx
                     .toBuilder()
                     .orderTotal(orderTotal)
                     .build();
-            
+
             // 4. Charge the credit card
             // This could throw an error for something like
             // INVALID_CARD_INFO, PAYMENT_DECLINED, etc.
             // In the REAL WORLD this would call out to a 3rd party service
             // We are just managing our own service for the demo
             debitCreditCard(saga, orderCtx);
-            
+
             // 5. Check with warehouse to see if the products are in stock - fail if not
             // If this fails, we compensate the customers credit card and reverse the charge
             // For this demo we are choosing to check inventory after charging the customer
             // for the products.
             // In a REAL WORLD scenario, this might be done before charging the customer
-            
+
             /** NOTE: Any exception after this point will cause the compensation to run **/
             CheckInventoryRequest invRequest = CheckInventoryRequest.builder()
                     .products(orderCtx.getProducts())
                     .build();
-                    
+
             warehouseActivity.checkInventory(invRequest);
-            
+
             // 6. get the shipping information/tracking number from the shipper
             CreateTrackingNumberRequest trackRequest = CreateTrackingNumberRequest.builder()
                     .products(orderCtx.getProducts())
                     .build();
-            
+
             // Add it into the order context
             String trackingNumber = shipperActivity.createTrackingNumber(trackRequest);
             orderCtx = orderCtx.toBuilder()
                     .trackingNumber(trackingNumber)
                     .build();
-            
+
             // 7. Save order history and send out email
             completeOrder(orderCtx);
 
         } catch (TemporalFailure e) {
             log.error(ExceptionUtils.getRootCauseMessage(e), e);
-            OrderPurchaseContext theCtx = orderCtx; // stupid to get around effectively final error
-            Workflow.newDetachedCancellationScope(() -> cleanup(e, saga, theCtx, theCtx.getTransactionId())).run();
+            OrderPurchaseContext finalOrderCtx = orderCtx; // Workaround for "effectively final" requirement
+            Workflow.newDetachedCancellationScope(
+                    () -> cleanup(e, saga, finalOrderCtx, finalOrderCtx.getTransactionId())).run();
             throw e;
         }
     }
 
     /**
-     * Calculates the total price for a list of products based on quantity and price.
+     * Calculates the total price for a list of products based on quantity and
+     * price.
      *
      * @param products List of products.
      * @return Total price.
@@ -156,7 +171,6 @@ public class OrderPurchaseWorkflowImpl implements OrderPurchaseWorkflow {
                 .sum();
     }
 
-    
     /**
      * Creates a new order with some initial information from the
      * request.
@@ -198,14 +212,23 @@ public class OrderPurchaseWorkflowImpl implements OrderPurchaseWorkflow {
     }
 
     /**
-     * Perform compensations and other cleanups
+     * Performs compensations and other cleanup operations in case of workflow
+     * failure.
      *
-     * @param e
+     * This method is responsible for:
+     * 1. Executing compensation actions defined in the Saga.
+     * 2. Handling order failure if the exception is not a cancellation.
+     * 3. Logging the cleanup process.
+     *
+     * @param e             The exception that triggered the cleanup.
+     * @param saga          The Saga object containing compensation actions.
+     * @param ctx           The OrderPurchaseContext containing order details.
+     * @param transactionId The UUID of the transaction being cleaned up.
      */
     private void cleanup(Exception e, Saga saga, OrderPurchaseContext ctx, UUID transactionId) {
         log.infof("Performing cleanup operations for TX id %s", transactionId);
 
-        // Perform compensations
+        // Execute compensation actions
         try {
             if (saga != null) {
                 saga.compensate();
@@ -214,7 +237,6 @@ public class OrderPurchaseWorkflowImpl implements OrderPurchaseWorkflow {
             log.error("Failed to complete compensations!", cpe);
         }
 
-        // If error
         // Cancelled failures are when the workflow is cancelled
         // from the WebUI or through code
         // You could handle that situation in your workflow
@@ -271,7 +293,6 @@ public class OrderPurchaseWorkflowImpl implements OrderPurchaseWorkflow {
         notificationActivity.sendOrderErrorEmail(emailRequest);
     }
 
-
     /**
      * Performs operations when a order completes
      *
@@ -280,7 +301,7 @@ public class OrderPurchaseWorkflowImpl implements OrderPurchaseWorkflow {
     private void completeOrder(OrderPurchaseContext ctx) {
 
         log.infof("Marking order %s as complete with TX id %s", ctx.getOrderNumber(), ctx.getTransactionId());
-        
+
         /** Save the final order to the database **/
         MarkOrderCompleteRequest completeReq = MarkOrderCompleteRequest.builder()
                 .products(ctx.getProducts())
@@ -314,7 +335,7 @@ public class OrderPurchaseWorkflowImpl implements OrderPurchaseWorkflow {
      * Process the credit card specified
      *
      * @param saga Saga to add compensation actions
-     * @param ctx {@link OrderPurchaseContext}
+     * @param ctx  {@link OrderPurchaseContext}
      */
     private DebitCreditCardResponse debitCreditCard(Saga saga, OrderPurchaseContext ctx) {
 
@@ -339,8 +360,8 @@ public class OrderPurchaseWorkflowImpl implements OrderPurchaseWorkflow {
                 .requestedByHost(ctx.getRequestedByHost())
                 .requestedByUser(ctx.getRequestedByUser())
                 .build();
-                       
+
         return paymentActivity.debitCreditCard(cardRequest);
-        
+
     }
 }

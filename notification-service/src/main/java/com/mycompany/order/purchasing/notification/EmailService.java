@@ -1,26 +1,25 @@
-package com.mycompany.order.purchasing.notification.mailer;
+package com.mycompany.order.purchasing.notification;
 
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import io.quarkus.mailer.Attachment;
-import io.quarkus.mailer.Mail;
-import io.quarkus.mailer.Mailer;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
+import io.quarkus.mailer.Attachment;
+import io.quarkus.mailer.Mail;
+import io.quarkus.mailer.Mailer;
+
 /**
- * Base class which handles sending emails
- * 
- 
+ * Base class which handles sending emails.
  */
 @ApplicationScoped
 public class EmailService {
 
     @Inject
     Mailer mailer;
-    
+
     /**
      * Send the email
      *
@@ -28,7 +27,7 @@ public class EmailService {
      */
     public void sendEmail(EmailNotificationRequest request) {
 
-        // Create  message
+        // Create message
         Mail m = new Mail();
         m.setTo(request.getRecipients());
         m.setSubject(request.getSubject());

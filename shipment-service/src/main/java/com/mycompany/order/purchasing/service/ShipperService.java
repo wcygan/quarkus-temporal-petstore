@@ -2,23 +2,20 @@ package com.mycompany.order.purchasing.service;
 
 import java.util.UUID;
 
-import org.jboss.logging.Logger;
+import jakarta.enterprise.context.ApplicationScoped;
 
 import com.mycompany.order.purchasing.shared.models.json.CreateTrackingNumberRequest;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
+import lombok.extern.jbosslog.JBossLog;
 
 /**
- * Dummy shipper service
+ * Dummy shipment service to simulate requesting a tracking number from a third
+ * party shipping service.
  * 
- 
  */
 @ApplicationScoped
+@JBossLog
 public class ShipperService {
-
-    @Inject
-    Logger log;
 
     /**
      * Create a tracking number
@@ -28,11 +25,11 @@ public class ShipperService {
      */
     public String createTrackingNumber(CreateTrackingNumberRequest request) {
         log.infof("Generating new tracking number for %d products", request.getProducts().size());
-        
+
         String tracker = UUID.randomUUID().toString();
-        
+
         log.infof("Generated tracking number %s", tracker);
         return tracker;
-        
+
     }
 }
