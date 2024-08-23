@@ -2,11 +2,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.mycompany</groupId>
-    <artifactId>order-purchasing-parent</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <groupId>com.melloware.petstore</groupId>
+    <artifactId>temporal-petstore-parent</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <name>Purchase Order Temporal POC</name>
+    <name>Petstore - Purchase Order Temporal POC</name>
+    <description>Demonstrate the use of Temporal with Quarkus to orchestrate a purchase order workflow.</description>
     <modules>
         <module>temporal-common</module>
         <module>notification-service</module>
@@ -17,14 +18,17 @@
         <module>purchase-order-gateway</module>
     </modules>
     <properties>
-
+        <!-- General configuration -->
         <maven.compiler.release>17</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <skipITs>true</skipITs>
+        <!-- Quarkus configuration -->
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
         <quarkus.platform.version>3.13.3</quarkus.platform.version>
-        <skipITs>true</skipITs>
+        <temporal-extension.version>0.0.5</temporal-extension.version>
+        <!-- Plugins configuration -->
         <compiler-plugin.version>3.13.0</compiler-plugin.version>
         <surefire-plugin.version>3.2.5</surefire-plugin.version>
     </properties>
@@ -40,7 +44,7 @@
             <dependency>
                 <groupId>io.quarkiverse.temporal</groupId>
                 <artifactId>quarkus-temporal</artifactId>
-                <version>0.0.4</version>
+                <version>${temporal-extension.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.tietoevry.quarkus</groupId>
@@ -48,9 +52,9 @@
                 <version>3.9.0</version>
             </dependency>
             <dependency>
-                <groupId>com.mycompany.order.purchasing</groupId>
+                <groupId>com.melloware.petstore</groupId>
                 <artifactId>temporal-common</artifactId>
-                <version>1.0-SNAPSHOT</version>
+                <version>1.0.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.projectlombok</groupId>

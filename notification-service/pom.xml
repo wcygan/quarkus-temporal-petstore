@@ -3,19 +3,18 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.mycompany</groupId>
-        <artifactId>order-purchasing-parent</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <groupId>com.melloware.petstore</groupId>
+        <artifactId>temporal-petstore-parent</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    <groupId>com.mycompany.order.purchasing</groupId>
-    <artifactId>order-notification-service</artifactId>
+    <artifactId>notification-service</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <name>Notification Service</name>
     <description>Notification service handles notification to customer of order progress/completion/cancellation.</description>
     <dependencies>
         <dependency>
-            <groupId>com.mycompany.order.purchasing</groupId>
+            <groupId>com.melloware.petstore</groupId>
             <artifactId>temporal-common</artifactId>
         </dependency>
         <dependency>
