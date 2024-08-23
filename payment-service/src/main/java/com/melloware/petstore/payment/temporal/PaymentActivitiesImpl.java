@@ -5,7 +5,6 @@ import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 
-import com.melloware.petstore.payment.service.PaymentService;
 import com.melloware.petstore.common.activities.payment.PaymentActivities;
 import com.melloware.petstore.common.models.json.DebitCreditCardRequest;
 import com.melloware.petstore.common.models.json.DebitCreditCardResponse;

@@ -1,4 +1,4 @@
-package com.melloware.petstore.payment.service;
+package com.melloware.petstore.payment.temporal;
 
 import java.util.Objects;
 import java.util.UUID;

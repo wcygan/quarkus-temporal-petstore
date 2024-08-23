@@ -3,7 +3,6 @@ package com.melloware.petstore.order.temporal;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
-import com.melloware.petstore.order.service.OrderService;
 import com.melloware.petstore.common.activities.order.OrderServiceActivities;
 import com.melloware.petstore.common.models.json.CreateOrderRequest;
 import com.melloware.petstore.common.models.json.CreateOrderResponse;

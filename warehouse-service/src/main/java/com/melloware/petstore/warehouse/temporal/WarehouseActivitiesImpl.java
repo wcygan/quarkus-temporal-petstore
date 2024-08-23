@@ -3,7 +3,6 @@ package com.melloware.petstore.warehouse.temporal;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
-import com.melloware.petstore.warehouse.service.WarehouseService;
 import com.melloware.petstore.common.activities.warehouse.WarehouseActivities;
 import com.melloware.petstore.common.models.exceptions.OutOfStockException;
 import com.melloware.petstore.common.models.json.CheckInventoryRequest;

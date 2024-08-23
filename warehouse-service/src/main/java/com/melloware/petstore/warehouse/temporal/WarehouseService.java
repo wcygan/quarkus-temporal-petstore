@@ -1,4 +1,4 @@
-package com.melloware.petstore.warehouse.service;
+package com.melloware.petstore.warehouse.temporal;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;

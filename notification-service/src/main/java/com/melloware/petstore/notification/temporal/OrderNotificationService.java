@@ -1,4 +1,4 @@
-package com.melloware.petstore.notification.service;
+package com.melloware.petstore.notification.temporal;
 
 import java.util.List;
 import java.util.Map;

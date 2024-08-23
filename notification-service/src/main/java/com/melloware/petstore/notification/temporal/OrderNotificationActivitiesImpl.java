@@ -5,7 +5,6 @@ import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 
-import com.melloware.petstore.notification.service.OrderNotificationService;
 import com.melloware.petstore.common.activities.order.OrderNotificationActivities;
 import com.melloware.petstore.common.models.json.OrderErrorEmailNotificationRequest;
 import com.melloware.petstore.common.models.json.OrderReceivedEmailNotificationRequest;

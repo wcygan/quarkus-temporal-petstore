@@ -3,7 +3,6 @@ package com.melloware.petstore.shipment.temporal;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
-import com.melloware.petstore.shipment.service.ShipperService;
 import com.melloware.petstore.common.activities.shipper.ShipperActivities;
 import com.melloware.petstore.common.models.json.CreateTrackingNumberRequest;
 

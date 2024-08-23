@@ -1,4 +1,4 @@
-package com.melloware.petstore.shipment.service;
+package com.melloware.petstore.shipment.temporal;
 
 import java.util.UUID;
 
