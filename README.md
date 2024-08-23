@@ -9,7 +9,7 @@ Quarkus Temporal Petstore is a comprehensive demonstration using Quarkus and Tem
 While the code is surprisingly simple, under the hood this is using:
 
 - [Quarkus](https://quarkus.io/) for super subatomic microservices
-- [Temporal](https://www.temporal.io/) to automatically update database
+- [Temporal](https://www.temporal.io/) for indestructible microservices and workflow orchestration
 - [Mailpit](https://mailpit.axllent.org/) email & SMTP testing tool
 - [PostgresSQL](https://www.postgresql.org/) the world's most advanced open source relational database
 
