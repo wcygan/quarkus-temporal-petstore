@@ -1,5 +1,17 @@
-# Temporal Petstore
+<div align="center">
+<img src="https://github.com/melloware/temporal-purchase-order/blob/main/docker-compose/quarkus-petstore-logo.png" width="400" height="294" >
+  
+# Temporal Quarkus Petstore
+</div>
+
 Temporal Petstore purchase order is a comprehensive demonstration using Quarkus and Temporal. It simulates placing a new order on your Petstore website and fulfilling it using a microservice architecture.
+
+While the code is surprisingly simple, under the hood this is using:
+
+- [Quarkus](https://quarkus.io/) for super subatomic microservices
+- [Temporal](https://www.temporal.io/) to automatically update database
+- [Mailpit](https://mailpit.axllent.org/) email & SMTP testing tool
+- [PostgresSQL](https://www.postgresql.org/) the world's most advanced open source relational database
 
 ## Overview
 
