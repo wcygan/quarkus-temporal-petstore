@@ -4,7 +4,7 @@
 # Quarkus Temporal Petstore
 </div>
 
-Temporal Petstore purchase order is a comprehensive demonstration using Quarkus and Temporal. It simulates placing a new order on your Petstore website and fulfilling it using a microservice architecture.
+Quarkus Temporal Petstore is a comprehensive demonstration using Quarkus and Temporal. It simulates placing a new order on your Petstore website and fulfilling it using a microservice architecture.
 
 While the code is surprisingly simple, under the hood this is using:
 
