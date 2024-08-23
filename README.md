@@ -1,7 +1,7 @@
 <div align="center">
 <img src="https://github.com/melloware/temporal-purchase-order/blob/main/docker-compose/quarkus-petstore-logo.png" width="400" height="294" >
   
-# Temporal Quarkus Petstore
+# Quarkus Temporal Petstore
 </div>
 
 Temporal Petstore purchase order is a comprehensive demonstration using Quarkus and Temporal. It simulates placing a new order on your Petstore website and fulfilling it using a microservice architecture.
