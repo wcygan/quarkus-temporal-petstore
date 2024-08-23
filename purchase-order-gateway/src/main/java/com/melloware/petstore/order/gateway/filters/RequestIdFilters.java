@@ -1,10 +1,13 @@
 package com.melloware.petstore.order.gateway.filters;
 
+import java.lang.management.ManagementFactory;
 import java.util.UUID;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.container.ContainerRequestContext;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jboss.logmanager.MDC;
 import org.jboss.resteasy.reactive.server.ServerRequestFilter;
 import org.jboss.resteasy.reactive.server.ServerResponseFilter;
@@ -19,6 +22,7 @@ import io.vertx.ext.web.RoutingContext;
  * making it available for logging purposes throughout the request lifecycle.
  * 
  */
+@ApplicationScoped
 public class RequestIdFilters {
 
     /**
@@ -50,6 +54,9 @@ public class RequestIdFilters {
     @Inject
     SecurityIdentity securityContext;
 
+    /** Cache hostname as it won't change after startup */
+    private static String hostname;
+
     /**
      * Filter method executed before processing the incoming request. Adds
      * request ID and IP address to the MDC context.
@@ -65,7 +72,7 @@ public class RequestIdFilters {
         // Retrieve IP address from the incoming request
         String ipAddress = request.request().remoteAddress().hostAddress();
 
-        // Get the logged in user (if any)
+        // Get the logged-in user (if any)
         String loggedInUser = extractUsername(securityContext);
 
         // Get machine name
@@ -84,7 +91,6 @@ public class RequestIdFilters {
      */
     @ServerResponseFilter
     public void clearRequestInformation() {
-
         // Clear MDC context to avoid memory leaks
         MDC.clear();
     }
@@ -114,11 +120,11 @@ public class RequestIdFilters {
      * @return Value stored in the HOSTNAME or COMPUTERNAME env variables
      */
     public static String getHostname() {
-        String hostname = System.getenv("COMPUTERNAME"); // On Windows
-        if (hostname == null || hostname.isEmpty()) {
-            hostname = System.getenv("HOSTNAME"); // On Unix/Linux
+        if (StringUtils.isNotBlank(hostname)) {
+            return hostname;
         }
-
+        String name = ManagementFactory.getRuntimeMXBean().getName();
+        hostname = name.split("@")[1];
         return hostname;
     }
 }
