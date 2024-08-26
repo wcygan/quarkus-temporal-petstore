@@ -130,7 +130,7 @@ public class MDCContextPropagator implements ContextPropagator {
                 // Add the value into the map
                 contextMap.put(key, payloadValue);
             } catch (Exception e) {
-                log.error("Couldn't parse Context Data Key {}", key, e);
+                log.warn("Couldn't parse MDC Context Data Key {}", key);
             }
         });
         return contextMap;
