@@ -1,14 +1,17 @@
 package com.melloware.petstore.common.utils;
 
-import com.google.protobuf.ByteString;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.MDC;
+
+import com.google.protobuf.ByteString;
 
 import io.temporal.api.common.v1.Payload;
 import io.temporal.common.context.ContextPropagator;
 import io.temporal.common.converter.GlobalDataConverter;
+
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -28,7 +31,7 @@ public class MDCContextPropagator implements ContextPropagator {
      * Gets the name of the context propagator.
      *
      * @return the name of the context propagator, which is the fully qualified
-     * class name.
+     *         class name.
      */
     @Override
     public String getName() {
@@ -39,7 +42,7 @@ public class MDCContextPropagator implements ContextPropagator {
      * Retrieves the current MDC context to be propagated.
      *
      * @return a map containing the current MDC context, filtered to include
-     * only entries with keys starting with "X-".
+     *         only entries with keys starting with "X-".
      */
     @Override
     public Object getCurrentContext() {
@@ -104,13 +107,13 @@ public class MDCContextPropagator implements ContextPropagator {
             // but leaving in right now
             //
             // {_tracer-data=metadata {
-            //    key: "encoding"
-            //    value: "json/plain"
-            //    }
+            // key: "encoding"
+            // value: "json/plain"
+            // }
             // data: "{}"
             // }
             try {
-                String payloadValue = ""; // default value
+                String payloadValue = StringUtils.EMPTY; // default value
 
                 // Convert data to string to compare
                 ByteString data = payload.getData();
@@ -118,11 +121,8 @@ public class MDCContextPropagator implements ContextPropagator {
                 // Check the value to see if it "empty"
                 if (data != null && !data.isEmpty()) {
 
-                    // Convert to string
-                    String theData = data.toStringUtf8();
-
                     // Check if the value isn't {}'s
-                    if (!theData.equals("{}")) {
+                    if (!StringUtils.equals("{}", data.toStringUtf8())) {
                         payloadValue = GlobalDataConverter.get().fromPayload(payload, String.class, String.class);
                     }
                 }
