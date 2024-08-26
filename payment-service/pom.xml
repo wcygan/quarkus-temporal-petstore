@@ -14,6 +14,10 @@
     <description>Payment service validates the payment information for the purchase.</description>
     <dependencies>
         <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-opentelemetry</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.melloware.petstore</groupId>
             <artifactId>temporal-common</artifactId>
         </dependency>

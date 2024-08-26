@@ -9,6 +9,7 @@ import org.slf4j.MDC;
 import io.temporal.api.common.v1.Payload;
 import io.temporal.common.context.ContextPropagator;
 import io.temporal.common.converter.GlobalDataConverter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * A {@link ContextPropagator} implementation that propagates the SLF4J MDC
@@ -16,6 +17,7 @@ import io.temporal.common.converter.GlobalDataConverter;
  * This class ensures that MDC entries with keys starting with "X-" are
  * propagated.
  */
+@Slf4j
 public class MDCContextPropagator implements ContextPropagator {
 
     public MDCContextPropagator() {
@@ -26,7 +28,7 @@ public class MDCContextPropagator implements ContextPropagator {
      * Gets the name of the context propagator.
      *
      * @return the name of the context propagator, which is the fully qualified
-     *         class name.
+     * class name.
      */
     @Override
     public String getName() {
@@ -36,8 +38,8 @@ public class MDCContextPropagator implements ContextPropagator {
     /**
      * Retrieves the current MDC context to be propagated.
      *
-     * @return a map containing the current MDC context, filtered to include only
-     *         entries with keys starting with "X-".
+     * @return a map containing the current MDC context, filtered to include
+     * only entries with keys starting with "X-".
      */
     @Override
     public Object getCurrentContext() {
@@ -98,6 +100,8 @@ public class MDCContextPropagator implements ContextPropagator {
             // Handle empty {} when the data value is empty
             // Adding opentracing seems to add a new value with empty data
             // and the dataconverter throws an error
+            // This actually might be a configuration error from earlier
+            // but leaving in right now
             //
             // {_tracer-data=metadata {
             //    key: "encoding"
@@ -105,25 +109,29 @@ public class MDCContextPropagator implements ContextPropagator {
             //    }
             // data: "{}"
             // }
-            String payloadValue = ""; // default value
+            try {
+                String payloadValue = ""; // default value
 
-            // Convert data to string to compare
-            ByteString data = payload.getData();
+                // Convert data to string to compare
+                ByteString data = payload.getData();
 
-            // Check the value to see if it "empty"
-            if (data != null && !data.isEmpty()) {
-                
-                // Convert to string
-                String theData = data.toStringUtf8();
+                // Check the value to see if it "empty"
+                if (data != null && !data.isEmpty()) {
 
-                // Check if the value isn't {}'s
-                if (!theData.equals("{}")) {
-                    payloadValue = GlobalDataConverter.get().fromPayload(payload, String.class, String.class);
+                    // Convert to string
+                    String theData = data.toStringUtf8();
+
+                    // Check if the value isn't {}'s
+                    if (!theData.equals("{}")) {
+                        payloadValue = GlobalDataConverter.get().fromPayload(payload, String.class, String.class);
+                    }
                 }
-            }
 
-            // Add the value into the map
-            contextMap.put(key, payloadValue);
+                // Add the value into the map
+                contextMap.put(key, payloadValue);
+            } catch (Exception e) {
+                log.error("Couldn't parse Context Data Key {}", key, e);
+            }
         });
         return contextMap;
     }

@@ -14,6 +14,10 @@
     <description>Notification service handles notification to customer of order progress/completion/cancellation.</description>
     <dependencies>
         <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-opentelemetry</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.melloware.petstore</groupId>
             <artifactId>temporal-common</artifactId>
         </dependency>
