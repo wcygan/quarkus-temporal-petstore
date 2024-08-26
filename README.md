@@ -21,20 +21,20 @@ While the code is surprisingly simple, under the hood this is using:
 
 The following workflow is orchestrated across these microservices.
 
-- Purchase Order Gateway service receives a new order through a REST service
-- Email is sent to the customer notifying them the order has been received and is processing
-- Order is persisted to the database
-- Credit Card is verified as valid with enough funds
-- Warehouse checks if there is enough inventory to fulfill this order
-- Shipment service registers the shipment and creates a tracking number
-- Order is marked as complete in the database with updated information
-- Email is sent to the customer notifying them order is on the way with tracking number
+- **PurchaseOrder Gateway Service** receives a new order through a REST service
+- **NotificationService:** Email is sent to the customer notifying them the order has been received and is processing
+- **OrderService:** Order is persisted to the database
+- **PaymentService:** Credit Card is verified as valid with enough funds
+- **WarehouseService:** Warehouse checks if there is enough inventory to fulfill this order
+- **ShipmentService:** Shipment service registers the shipment and creates a tracking number
+- **OrderService:** Order is marked as complete in the database with updated information
+- **NotificationService:** Email is sent to the customer notifying them order is on the way with tracking number
 
 If anything in this process fails a "compensating transaction" must occur with the following steps:
 
-- Payment service must reverse the payment or release the credit card hold
-- Order service must update the database with the failure information
-- Email is sent to the customer notifying them something went wrong and to call customer service with a reference number.
+- **PaymentService:** must reverse the payment or release the credit card hold
+- **OrderService:** must update the database with the failure information
+- **NotificationService:** Email is sent to the customer notifying them something went wrong and to call customer service with a reference number.
 
 Temporal handles retrying and waiting for your services to come back up. So it will track the workflow until it is completed or issue a failure if the whole workflow is not completed in time (by default 24 hours).
 
@@ -102,8 +102,8 @@ You should see the new Workflow in the Temporal UI as well as both an Order Rece
 
 There are a few ways to induce failures in the workflow.
 
-1. PaymentService Error: Put a `price` of greater than 1000
-1. PaymentService Error: Put a `customerEmail` of `bad_customer@foo.com`
-1. WarehouseService Error: Put a `quantity` of greater than 20 over many orders
+1. **PaymentService ERROR:** Put a `price` of greater than 1000
+1. **PaymentService ERROR:** Put a `customerEmail` of `bad_customer@foo.com`
+1. **WarehouseService ERROR:** Put a `quantity` of greater than 20 over many orders
 
 These will fail the workflow and trigger the compensating transactions.
