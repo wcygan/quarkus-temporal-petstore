@@ -1,13 +1,16 @@
-package com.melloware.petstore.common.utils;
+package com.melloware.petstore.common.context;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import jakarta.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.MDC;
 
 import com.google.protobuf.ByteString;
 
+import io.quarkus.arc.Unremovable;
 import io.temporal.api.common.v1.Payload;
 import io.temporal.common.context.ContextPropagator;
 import io.temporal.common.converter.GlobalDataConverter;
@@ -21,6 +24,8 @@ import lombok.extern.slf4j.Slf4j;
  * propagated.
  */
 @Slf4j
+@Singleton
+@Unremovable
 public class MDCContextPropagator implements ContextPropagator {
 
     public MDCContextPropagator() {
