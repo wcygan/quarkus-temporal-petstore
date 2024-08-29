@@ -72,14 +72,6 @@ public class OrderNotificationService {
         log.infof("Sending order received email to %s with TX id %s", request.getCustomerEmail(),
                 request.getTransactionNumber());
         emailService.sendEmail(emailReq);
-
-        // sleep a random amount of time to simulate the email being sent
-        // try {
-        // Thread.sleep(Workflow.newRandom().nextLong(9000));
-        // } catch (InterruptedException e) {
-        // Thread.currentThread().interrupt();
-        // log.warn("Sleep interrupted", e);
-        // }
     }
 
     /**

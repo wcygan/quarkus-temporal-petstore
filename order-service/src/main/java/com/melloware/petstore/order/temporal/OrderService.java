@@ -3,6 +3,7 @@ package com.melloware.petstore.order.temporal;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -95,6 +96,17 @@ public class OrderService {
      */
     @Transactional
     public CreateOrderResponse createOrder(CreateOrderRequest request) {
+
+        // Generate a random delay between 1 and 9 seconds
+        int delayInSeconds = ThreadLocalRandom.current().nextInt(1, 10);
+
+        try {
+            // Sleep for the generated delay
+            Thread.sleep(delayInSeconds * 1000L);
+        } catch (InterruptedException e) {
+            // Handle interruption appropriately if needed
+            Thread.currentThread().interrupt();
+        }
 
         // Verify we didn't already try to create an order with the transaction id
         // This is because the workflow could get replayed and we need to make sure
