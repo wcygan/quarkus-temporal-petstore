@@ -1,17 +1,15 @@
-{#include email/base.html}
-{#body}
+{#include email/base.html} {#body}
 <p>Dear <strong>{item.customerEmail}</strong>,</p>
 <p>We regret to inform you that there was an error processing your recent purchase order.</p>
 <p>Please contact our customer support team for assistance and include the following details:</p>
 <ul>
-    <li><strong>Reference Number:</strong> {item.transactionNumber}</li>
-    {#if item.orderNumber}
-    <li><strong>Order Number:</strong> {item.orderNumber}</li>
-    {/if}
-    <li><strong>Order Date:</strong> {item.orderDate.format('yyyy-MM-dd HH:mm:ss')} UTC</li>
+  <li><strong>Reference Number:</strong> {item.transactionNumber}</li>
+  {#if item.orderNumber}
+  <li><strong>Order Number:</strong> {item.orderNumber}</li>
+  {/if}
+  <li><strong>Order Date:</strong> {item.orderDate.format('yyyy-MM-dd HH:mm:ss')} UTC</li>
 </ul>
 <p>We apologize for any inconvenience this may have caused and appreciate your understanding.</p>
 <p>Best regards,</p>
-<p>MyCompany Support</p>
-{/body}
-{/include}
+<p>Quarkus Petstore Support</p>
+{/body} {/include}

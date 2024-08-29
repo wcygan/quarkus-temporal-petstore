@@ -9,11 +9,11 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.melloware.petstore.notification.EmailNotificationRequest;
-import com.melloware.petstore.notification.EmailService;
 import com.melloware.petstore.common.models.json.OrderErrorEmailNotificationRequest;
 import com.melloware.petstore.common.models.json.OrderReceivedEmailNotificationRequest;
 import com.melloware.petstore.common.models.json.OrderSuccessEmailNotificationRequest;
+import com.melloware.petstore.notification.EmailNotificationRequest;
+import com.melloware.petstore.notification.EmailService;
 
 import io.micrometer.core.annotation.Counted;
 import io.micrometer.core.annotation.Timed;
@@ -73,6 +73,13 @@ public class OrderNotificationService {
                 request.getTransactionNumber());
         emailService.sendEmail(emailReq);
 
+        // sleep a random amount of time to simulate the email being sent
+        // try {
+        // Thread.sleep(Workflow.newRandom().nextLong(9000));
+        // } catch (InterruptedException e) {
+        // Thread.currentThread().interrupt();
+        // log.warn("Sleep interrupted", e);
+        // }
     }
 
     /**

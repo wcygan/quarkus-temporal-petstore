@@ -1,32 +1,30 @@
-{#include email/base.html}
-{#body}
+{#include email/base.html} {#body}
 <p>Dear <strong>{item.customerEmail}</strong>,</p>
 <p>We are pleased to inform you that your order has shipped!!!</p>
 <p>The following details are associated with your order:</p>
 <ul>
-    <li><strong>Reference Number:</strong> {item.transactionNumber}</li>
-    <li><strong>Order Number:</strong> {item.orderNumber}</li>
-    <li><strong>Order Date:</strong> {item.orderDate.format('yyyy-MM-dd HH:mm:ss')} UTC</li>
-    <li><strong>Order total:</strong> {item.orderTotal.formatCurrency}</li>
-    <li><strong>Tracking Number:</strong> {item.trackingNumber}</li>
+  <li><strong>Reference Number:</strong> {item.transactionNumber}</li>
+  <li><strong>Order Number:</strong> {item.orderNumber}</li>
+  <li><strong>Order Date:</strong> {item.orderDate.format('yyyy-MM-dd HH:mm:ss')} UTC</li>
+  <li><strong>Order total:</strong> {item.orderTotal.formatCurrency}</li>
+  <li><strong>Tracking Number:</strong> {item.trackingNumber}</li>
 </ul>
 <p>Products Purchased:</p>
 <table class="data-table">
-    <tr>
-        <th>SKU</th>
-        <th>Quantity</th>
-        <th>Unit Price</th>
-    </tr>
-    {#for entry in item.products}
-    <tr>
-        <td>{entry.sku}</td>
-        <td>{entry.quantity}</td>
-        <td>{entry.price}</td>
-    </tr>
-    {/for}
+  <tr>
+    <th>SKU</th>
+    <th>Quantity</th>
+    <th>Unit Price</th>
+  </tr>
+  {#for entry in item.products}
+  <tr>
+    <td>{entry.sku}</td>
+    <td>{entry.quantity}</td>
+    <td>{entry.price}</td>
+  </tr>
+  {/for}
 </table>
 <p>If you have any questions or need further assistance, please do not hesitate to contact our support team.</p>
 <p>Best regards,</p>
-<p>MyCompany Support</p>
-{/body}
-{/include}
+<p>Quarkus Petstore Support</p>
+{/body} {/include}

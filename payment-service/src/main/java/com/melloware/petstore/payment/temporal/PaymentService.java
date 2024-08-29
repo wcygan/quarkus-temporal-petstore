@@ -73,7 +73,8 @@ public class PaymentService {
         if (request.getCustomerEmail().equalsIgnoreCase("bad_customer@foo.com")) {
             throw new BadPaymentInfoException("Customer email doesn't match card owner");
         } else if (request.getAmount() > creditLimit) {
-            throw new PaymentDeclinedException("Order amount "+request.getAmount()+" exceeds credit limit of " + creditLimit);
+            throw new PaymentDeclinedException(
+                    "Order amount " + request.getAmount() + " exceeds credit limit of " + creditLimit);
         }
 
         // Return the response

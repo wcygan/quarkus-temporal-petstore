@@ -9,13 +9,18 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.Response;
 
-import com.melloware.petstore.order.gateway.filters.RequestIdFilters;
-import com.melloware.petstore.order.gateway.temporal.OrderPurchaseWorkflow;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.media.Content;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import org.jboss.logmanager.MDC;
 
 import com.melloware.petstore.common.models.json.OrderPurchaseRequest;
 import com.melloware.petstore.common.models.json.WorkflowInitiationResponse;
+import com.melloware.petstore.order.gateway.filters.RequestIdFilters;
+import com.melloware.petstore.order.gateway.temporal.OrderPurchaseWorkflow;
 
 import io.micrometer.core.annotation.Timed;
 import io.temporal.client.WorkflowClient;
@@ -24,10 +29,12 @@ import io.temporal.client.WorkflowOptions;
 import lombok.extern.jbosslog.JBossLog;
 
 /**
- * Entry into the ordering system.
+ * Entry point into the ordering system.
+ * This class provides the API endpoint for initiating product purchase orders.
  */
 @Path("/api/v1/opg")
 @JBossLog
+@Tag(name = "Order Purchase", description = "Operations related to purchasing orders")
 public class OrderPurchaseGateway {
 
     @ConfigProperty(name = "quarkus.temporal.worker.task-queue")
@@ -37,21 +44,25 @@ public class OrderPurchaseGateway {
     WorkflowClient client;
 
     /**
-     * This method is used to start the product purchase process and will start
-     * the workflow to work with various services to create new order and
-     * ultimately notify the user
+     * Initiates the product purchase process by starting a workflow that interacts
+     * with various services to create a new order and notify the user.
      *
-     * @param request {@link OrderPurchaseRequest}
-     * @return
+     * @param request The order purchase request containing details about the order.
+     * @return A Response object with the transaction ID of the initiated workflow.
+     * @throws RuntimeException if there's an error processing the order purchase
+     *                          request.
      */
     @Path("/purchase")
     @Timed
     @POST
-    public Response purchaseOrder(@Valid OrderPurchaseRequest request) {
+    @Operation(summary = "Initiate a product purchase", description = "Starts the workflow to process a new order purchase")
+    @APIResponse(responseCode = "202", description = "Order purchase request accepted", content = @Content(mediaType = "application/json", schema = @Schema(implementation = WorkflowInitiationResponse.class)))
+    @APIResponse(responseCode = "500", description = "Internal server error")
+    public Response purchaseOrder(
+            @Valid @Schema(implementation = OrderPurchaseRequest.class) OrderPurchaseRequest request) {
         log.infof("Initiating order purchase request with incoming request - %s", request);
 
         try {
-
             // Get the transaction id from the request
             UUID requestId = UUID.fromString(MDC.get(RequestIdFilters.REQUEST_ID_MDC_KEY));
 
@@ -79,7 +90,7 @@ public class OrderPurchaseGateway {
                     .build();
         } catch (Exception e) {
             log.error("Error processing order purchase request", e);
-            throw new RuntimeException("Error processing order  purchase request", e);
+            throw new RuntimeException("Error processing order purchase request", e);
         }
     }
 }

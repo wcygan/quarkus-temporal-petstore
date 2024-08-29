@@ -1,31 +1,30 @@
-{#include email/base.html}
-{#body}
+{#include email/base.html} {#body}
 <p>Dear <strong>{item.customerEmail}</strong>,</p>
 <p>Thank you for placing an order with us. We have received your product order request and are currently processing it.</p>
 <p>Below are the details of your order request:</p>
 <ul>
-    <li><strong>Reference Number:</strong> {item.transactionNumber}</li>
-    <li><strong>Order Date:</strong> {item.orderDate.format('yyyy-MM-dd HH:mm:ss')} UTC</li>
-    <li><strong>Products Purchased:</strong>
-        <table class="data-table">
-            <tr>
-                <th>SKU</th>
-                <th>Quantity</th>
-                <th>Unit Price</th>
-            </tr>
-            {#for entry in item.products}
-            <tr>
-                <td>{entry.sku}</td>
-                <td>{entry.quantity}</td>
-                <td>{entry.price}</td>
-            </tr>
-            {/for}
-        </table>
-    </li>
+  <li><strong>Reference Number:</strong> {item.transactionNumber}</li>
+  <li><strong>Order Date:</strong> {item.orderDate.format('yyyy-MM-dd HH:mm:ss')} UTC</li>
+  <li>
+    <strong>Products Purchased:</strong>
+    <table class="data-table">
+      <tr>
+        <th>SKU</th>
+        <th>Quantity</th>
+        <th>Unit Price</th>
+      </tr>
+      {#for entry in item.products}
+      <tr>
+        <td>{entry.sku}</td>
+        <td>{entry.quantity}</td>
+        <td>{entry.price}</td>
+      </tr>
+      {/for}
+    </table>
+  </li>
 </ul>
 <p>We will notify you again once your order has been successfully completed.</p>
 <p>If you don't receive that email within 24 hours, please contact our support staff.</p>
 <p>Best regards,</p>
-<p>MyCompany Support</p>
-{/body}
-{/include}
+<p>Quarkus Petstore Support</p>
+{/body} {/include}
