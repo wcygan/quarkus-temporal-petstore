@@ -14,10 +14,10 @@ import com.melloware.petstore.common.models.json.OrderSuccessEmailNotificationRe
  * Handles notifications for order operations
  */
 @ApplicationScoped
-public class OrderNotificationActivitiesImpl implements OrderNotificationActivities {
+public class NotificationActivitiesImpl implements OrderNotificationActivities {
 
     @Inject
-    OrderNotificationService service;
+    NotificationService service;
 
     @Override
     public void sendOrderReceivedEmail(@Valid @NotNull OrderReceivedEmailNotificationRequest request) {

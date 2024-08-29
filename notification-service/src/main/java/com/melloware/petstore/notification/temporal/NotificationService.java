@@ -27,7 +27,7 @@ import lombok.extern.jbosslog.JBossLog;
  */
 @ApplicationScoped
 @JBossLog
-public class OrderNotificationService {
+public class NotificationService {
 
     @Inject
     EmailService emailService;
