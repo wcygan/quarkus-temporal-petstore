@@ -1,4 +1,4 @@
-package com.melloware.petstore.order.gateway;
+package com.melloware.petstore.order.gateway.temporal;
 
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -23,7 +23,7 @@ import lombok.extern.jackson.Jacksonized;
 @Getter
 @ToString
 @Jacksonized
-public class OrderPurchaseContext extends RequiredFieldsBaseBuilder {
+public class PurchaseOrderContext extends RequiredFieldsBaseBuilder {
 
     @NotNull(message = "Transaction id is required")
     private final UUID transactionId;

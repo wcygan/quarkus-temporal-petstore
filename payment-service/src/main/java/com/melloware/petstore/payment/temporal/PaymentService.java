@@ -61,8 +61,7 @@ public class PaymentService {
          * return some response information.
          * 
          * In this instance I just return an authorization code, the charged amount, and
-         * original
-         * credit card information.
+         * original credit card information.
          */
 
         /**
@@ -70,7 +69,7 @@ public class PaymentService {
          * and another error for any orders over 1000 dollars, etc.
          */
         final int creditLimit = 1000;
-        if (request.getCustomerEmail().equalsIgnoreCase("bad_customer@foo.com")) {
+        if ("bad_customer@foo.com".equalsIgnoreCase(request.getCustomerEmail())) {
             throw new BadPaymentInfoException("Customer email doesn't match card owner");
         } else if (request.getAmount() > creditLimit) {
             throw new PaymentDeclinedException(

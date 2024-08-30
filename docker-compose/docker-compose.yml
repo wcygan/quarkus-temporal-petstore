@@ -16,7 +16,7 @@ services:
     container_name: temporal-mailpit
     image: axllent/mailpit
     ports:
-      - 1025:1025 # smtp server
+      - 2025:1025 # smtp server
       - 8025:8025 # web ui
   postgresql:
     container_name: temporal-postgresql

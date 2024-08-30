@@ -9,8 +9,6 @@ import jakarta.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
-import com.melloware.petstore.order.gateway.ActivityStubsProvider;
-import com.melloware.petstore.order.gateway.OrderPurchaseContext;
 import com.melloware.petstore.common.activities.order.OrderNotificationActivities;
 import com.melloware.petstore.common.activities.order.OrderServiceActivities;
 import com.melloware.petstore.common.activities.payment.PaymentActivities;
@@ -59,18 +57,17 @@ import lombok.extern.jbosslog.JBossLog;
  * </ol>
  * <p>
  * The workflow includes error handling and compensation logic to manage
- * failures
- * at various stages of the order process.
+ * failures at various stages of the order process.
  */
 @JBossLog
-public class OrderPurchaseWorkflowImpl implements OrderPurchaseWorkflow {
+public class PurchaseOrderWorkflowImpl implements PurchaseOrderWorkflow {
 
     private final PaymentActivities paymentActivity = ActivityStubsProvider.getPaymentActivities();
     private final OrderNotificationActivities notificationActivity = ActivityStubsProvider
             .getOrderNotificationActivities();
     private final OrderServiceActivities orderActivity = ActivityStubsProvider.getOrderServiceActivities();
     private final WarehouseActivities warehouseActivity = ActivityStubsProvider.getWarehouseActivities();
-    private final ShipperActivities shipperActivity = ActivityStubsProvider.getShipperActivities();
+    private final ShipperActivities shipmentActivity = ActivityStubsProvider.getShipperActivities();
 
     /**
      * Initiates and executes the order placement workflow.
@@ -85,9 +82,9 @@ public class OrderPurchaseWorkflowImpl implements OrderPurchaseWorkflow {
      * @throws TemporalFailure      for workflow-related failures.
      */
     @Override
-    public void placeOrder(@Valid @NotNull OrderPurchaseContext orderCtx) {
+    public void placeOrder(@Valid @NotNull PurchaseOrderContext orderCtx) {
 
-        Objects.requireNonNull(orderCtx, "OrderPurchaseContext is required");
+        Objects.requireNonNull(orderCtx, "PurchaseOrderContext is required");
 
         // Initialize the saga for potential compensations
         Saga saga = new Saga(new Saga.Options.Builder().build());
@@ -141,7 +138,7 @@ public class OrderPurchaseWorkflowImpl implements OrderPurchaseWorkflow {
                     .build();
 
             // Add it into the order context
-            String trackingNumber = shipperActivity.createTrackingNumber(trackRequest);
+            String trackingNumber = shipmentActivity.createTrackingNumber(trackRequest);
             orderCtx = orderCtx.toBuilder()
                     .trackingNumber(trackingNumber)
                     .build();
@@ -151,7 +148,7 @@ public class OrderPurchaseWorkflowImpl implements OrderPurchaseWorkflow {
 
         } catch (TemporalFailure e) {
             log.error(ExceptionUtils.getRootCauseMessage(e), e);
-            OrderPurchaseContext finalOrderCtx = orderCtx; // Workaround for "effectively final" requirement
+            PurchaseOrderContext finalOrderCtx = orderCtx; // Workaround for "effectively final" requirement
             Workflow.newDetachedCancellationScope(
                     () -> cleanup(e, saga, finalOrderCtx, finalOrderCtx.getTransactionId())).run();
             throw e;
@@ -177,10 +174,10 @@ public class OrderPurchaseWorkflowImpl implements OrderPurchaseWorkflow {
      * <p>
      * The rest of the data will be added later in the process
      *
-     * @param purchaseCtx {@link OrderPurchaseContext}
+     * @param purchaseCtx {@link PurchaseOrderContext}
      * @return {@link CreateOrderResponse}
      */
-    private CreateOrderResponse generateProductOrder(OrderPurchaseContext purchaseCtx) {
+    private CreateOrderResponse generateProductOrder(PurchaseOrderContext purchaseCtx) {
         log.infof("Generating new order record for TX id %s", purchaseCtx.getTransactionId());
         CreateOrderRequest newOrderReq = CreateOrderRequest.builder()
                 .customerEmail(purchaseCtx.getCustomerEmail())
@@ -197,9 +194,9 @@ public class OrderPurchaseWorkflowImpl implements OrderPurchaseWorkflow {
     /**
      * Sends the order received email
      *
-     * @param purchaseCtx {@link OrderPurchaseContext}
+     * @param purchaseCtx {@link PurchaseOrderContext}
      */
-    private void sendOrderReceivedEmail(OrderPurchaseContext purchaseCtx) {
+    private void sendOrderReceivedEmail(PurchaseOrderContext purchaseCtx) {
         log.info("Sending order request received notification");
         OrderReceivedEmailNotificationRequest orderRcvReq = OrderReceivedEmailNotificationRequest.builder()
                 .transactionNumber(purchaseCtx.getTransactionId())
@@ -225,7 +222,7 @@ public class OrderPurchaseWorkflowImpl implements OrderPurchaseWorkflow {
      * @param ctx           The OrderPurchaseContext containing order details.
      * @param transactionId The UUID of the transaction being cleaned up.
      */
-    private void cleanup(Exception e, Saga saga, OrderPurchaseContext ctx, UUID transactionId) {
+    private void cleanup(Exception e, Saga saga, PurchaseOrderContext ctx, UUID transactionId) {
         log.infof("Performing cleanup operations for TX id %s", transactionId);
 
         // Execute compensation actions
@@ -253,9 +250,10 @@ public class OrderPurchaseWorkflowImpl implements OrderPurchaseWorkflow {
     /**
      * Performs operations when a order fails
      *
-     * @param ctx {@link LicenseOrderContext}
+     * @param e   The exception that caused the order to fail
+     * @param ctx {@link PurchaseOrderContext}
      */
-    private void failOrder(Exception e, OrderPurchaseContext ctx) {
+    private void failOrder(Exception e, PurchaseOrderContext ctx) {
 
         // Default to SYSTEM error
         OrderFailureReason reason = OrderFailureReason.SYSTEM_ERROR;
@@ -294,11 +292,11 @@ public class OrderPurchaseWorkflowImpl implements OrderPurchaseWorkflow {
     }
 
     /**
-     * Performs operations when a order completes
+     * Performs operations when an order completes successfully
      *
-     * @param ctx {@link OrderPurchaseContext}
+     * @param ctx {@link PurchaseOrderContext}
      */
-    private void completeOrder(OrderPurchaseContext ctx) {
+    private void completeOrder(PurchaseOrderContext ctx) {
 
         log.infof("Marking order %s as complete with TX id %s", ctx.getOrderNumber(), ctx.getTransactionId());
 
@@ -332,24 +330,26 @@ public class OrderPurchaseWorkflowImpl implements OrderPurchaseWorkflow {
     }
 
     /**
-     * Process the credit card specified
+     * Process the credit card specified in the order context
      *
      * @param saga Saga to add compensation actions
-     * @param ctx  {@link OrderPurchaseContext}
+     * @param ctx  {@link PurchaseOrderContext}
+     * @return {@link DebitCreditCardResponse} containing the result of the credit
+     *         card transaction
      */
-    private DebitCreditCardResponse debitCreditCard(Saga saga, OrderPurchaseContext ctx) {
+    private DebitCreditCardResponse debitCreditCard(Saga saga, PurchaseOrderContext ctx) {
 
         log.info("Calling Payment service to debit credit card");
 
         // Setup the compensation
-        // Create the reversal in case of compensations later
-        ReverseActionsForTransactionRequest reverseReq = ReverseActionsForTransactionRequest.builder()
+        ReverseActionsForTransactionRequest reverseRequest = ReverseActionsForTransactionRequest.builder()
                 .requestedByHost(ctx.getRequestedByHost())
                 .requestedByUser(ctx.getRequestedByUser())
                 .transactionId(ctx.getTransactionId())
                 .build();
 
-        saga.addCompensation(() -> paymentActivity.reversePaymentTransactions(reverseReq));
+        // Create the reversal in case of compensations later
+        saga.addCompensation(() -> paymentActivity.reversePaymentTransactions(reverseRequest));
 
         // debit card and return some sort of auth number or whatever
         DebitCreditCardRequest cardRequest = DebitCreditCardRequest.builder()

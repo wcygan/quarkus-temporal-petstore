@@ -20,7 +20,8 @@ import org.jboss.logmanager.MDC;
 import com.melloware.petstore.common.models.json.OrderPurchaseRequest;
 import com.melloware.petstore.common.models.json.WorkflowInitiationResponse;
 import com.melloware.petstore.order.gateway.filters.RequestIdFilters;
-import com.melloware.petstore.order.gateway.temporal.OrderPurchaseWorkflow;
+import com.melloware.petstore.order.gateway.temporal.PurchaseOrderContext;
+import com.melloware.petstore.order.gateway.temporal.PurchaseOrderWorkflow;
 
 import io.micrometer.core.annotation.Timed;
 import io.temporal.client.WorkflowClient;
@@ -34,8 +35,8 @@ import lombok.extern.jbosslog.JBossLog;
  */
 @Path("/api/v1/opg")
 @JBossLog
-@Tag(name = "Order Purchase", description = "Operations related to purchasing orders")
-public class OrderPurchaseGateway {
+@Tag(name = "Purchase Order", description = "Operations related to purchasing orders")
+public class PurchaseOrderGatewayResource {
 
     @ConfigProperty(name = "quarkus.temporal.worker.task-queue")
     String taskQueue;
@@ -67,13 +68,13 @@ public class OrderPurchaseGateway {
             UUID requestId = UUID.fromString(MDC.get(RequestIdFilters.REQUEST_ID_MDC_KEY));
 
             // Start the workflow
-            OrderPurchaseWorkflow workflow = client.newWorkflowStub(OrderPurchaseWorkflow.class,
+            PurchaseOrderWorkflow workflow = client.newWorkflowStub(PurchaseOrderWorkflow.class,
                     WorkflowOptions.newBuilder()
                             .setWorkflowId("OrderPurchase-" + requestId.toString())
                             .setTaskQueue(taskQueue).build());
 
             // Create the context
-            OrderPurchaseContext ctx = OrderPurchaseContext.builder()
+            PurchaseOrderContext ctx = PurchaseOrderContext.builder()
                     .transactionId(requestId)
                     .customerEmail(request.getCustomerEmail())
                     .creditCard(request.getCreditCard())

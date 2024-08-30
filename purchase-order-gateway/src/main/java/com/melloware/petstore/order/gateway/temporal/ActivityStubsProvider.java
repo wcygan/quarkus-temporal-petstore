@@ -1,4 +1,4 @@
-package com.melloware.petstore.order.gateway;
+package com.melloware.petstore.order.gateway.temporal;
 
 import java.time.Duration;
 
@@ -21,8 +21,17 @@ import io.temporal.activity.ActivityOptions;
 import io.temporal.common.RetryOptions;
 import io.temporal.workflow.Workflow;
 
+import lombok.experimental.UtilityClass;
+
+/**
+ * Provider class for creating activity stubs with predefined options.
+ * This class sets up common activity options and provides methods to create
+ * activity stubs for various services in the pet store application.
+ */
+@UtilityClass
 public class ActivityStubsProvider {
 
+        // Activity options for demo purposes, limiting retry time
         private final static ActivityOptions options = ActivityOptions.newBuilder()
                         .setStartToCloseTimeout(Duration.ofSeconds(30))
                         .setRetryOptions(RetryOptions.newBuilder()
@@ -37,16 +46,17 @@ public class ActivityStubsProvider {
                                                         PurchasingException.class.getName(),
                                                         IllegalArgumentException.class.getName())
                                         .setInitialInterval(Duration.ofSeconds(1))
+                                        .setMaximumInterval(Duration.ofSeconds(100))
                                         .setBackoffCoefficient(2)
+                                        .setMaximumAttempts(500)
                                         .build())
                         .build();
 
-        private ActivityStubsProvider() {
-        }
-
-        // we use setScheduleToCloseTimeout for the demo
-        // in order to limit the activity retry time
-        // this is done so we don't have to wait too long in demo to show failure
+        /**
+         * Creates and returns a WarehouseActivities stub.
+         *
+         * @return WarehouseActivities stub with predefined options
+         */
         public static WarehouseActivities getWarehouseActivities() {
                 ActivityOptions newOptions = ActivityOptions.newBuilder(options)
                                 .setTaskQueue("warehouse-tasks")
@@ -58,9 +68,11 @@ public class ActivityStubsProvider {
                                 newOptions);
         }
 
-        // we use setScheduleToCloseTimeout for the demo
-        // in order to limit the activity retry time
-        // this is done so we don't have to wait too long in demo to show failure
+        /**
+         * Creates and returns a ShipperActivities stub.
+         *
+         * @return ShipperActivities stub with predefined options
+         */
         public static ShipperActivities getShipperActivities() {
                 ActivityOptions newOptions = ActivityOptions.newBuilder(options)
                                 .setTaskQueue("shipment-tasks")
@@ -72,6 +84,11 @@ public class ActivityStubsProvider {
                                 newOptions);
         }
 
+        /**
+         * Creates and returns a PaymentActivities stub.
+         *
+         * @return PaymentActivities stub with predefined options
+         */
         public static PaymentActivities getPaymentActivities() {
                 ActivityOptions newOptions = ActivityOptions.newBuilder(options)
                                 .setTaskQueue("payment-tasks")
@@ -82,6 +99,11 @@ public class ActivityStubsProvider {
                                 newOptions);
         }
 
+        /**
+         * Creates and returns an OrderServiceActivities stub.
+         *
+         * @return OrderServiceActivities stub with predefined options
+         */
         public static OrderServiceActivities getOrderServiceActivities() {
                 ActivityOptions newOptions = ActivityOptions.newBuilder(options)
                                 .setTaskQueue("order-tasks")
@@ -92,6 +114,11 @@ public class ActivityStubsProvider {
                                 newOptions);
         }
 
+        /**
+         * Creates and returns an OrderNotificationActivities stub.
+         *
+         * @return OrderNotificationActivities stub with predefined options
+         */
         public static OrderNotificationActivities getOrderNotificationActivities() {
                 ActivityOptions newOptions = ActivityOptions.newBuilder(options)
                                 .setTaskQueue("notification-tasks")
