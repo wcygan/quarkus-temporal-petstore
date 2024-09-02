@@ -1,5 +1,5 @@
 <div align="center">
-<img src="https://github.com/melloware/temporal-purchase-order/blob/main/docker-compose/quarkus-petstore-logo.png" width="400" height="294" >
+<img src="https://github.com/melloware/temporal-purchase-order/blob/main/docs/quarkus-petstore-logo.png" width="400" height="294" >
   
 # Quarkus Temporal Petstore
 </div>
@@ -79,18 +79,18 @@ To start the workflow go to [Gateway Service DevUI](http://localhost:8082/q/dev-
 ```js
 {
   "creditCard": {
-    "cardNumber": "67915919403732",
+    "cardNumber": "4400123487650987",
     "cardHolderName": "Homer Simpson",
-    "expiryDate": "04/09",
-    "cvv": "5091",
+    "expiryDate": "12/25",
+    "cvv": "372",
     "type": "VISA"
   },
   "customerEmail": "homer.simpson@springfield.gov",
   "products": [
     {
-      "sku": "8675309",
-      "quantity": 1,
-      "price": 50
+      "sku": "DOG-COLLAR-001",
+      "quantity": 5,
+      "price": 19.99
     }
   ]
 }
@@ -107,3 +107,7 @@ There are a few ways to induce failures in the workflow.
 1. **WarehouseService ERROR:** Put a `quantity` of greater than 20 over many orders
 
 These will fail the workflow and trigger the compensating transactions.
+
+## Infrastructure Diagram
+
+[![Infrastructure Diagram](https://github.com/melloware/temporal-purchase-order/blob/main/docs/quarkus-remote-workflow.png)]()
