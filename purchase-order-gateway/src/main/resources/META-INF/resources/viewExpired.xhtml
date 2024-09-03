@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:f="jakarta.faces.core"
+      xmlns:p="primefaces"
+      xmlns:h="jakarta.faces.html">
+
+    <h:head>
+        <title>Error</title>
+		<style type="text/css">
+            .content-source {
+                display: none
+            }
+        </style>
+    </h:head>
+    <h:body>
+
+        <h1>Error <span class="subitem">View Expired</span></h1>
+		
+		<h3>Message: #{pfExceptionHandler.message}</h3>
+        
+		<p><h:outputText value="#{pfExceptionHandler.formattedStackTrace}" escape="false" /></p>
+
+    </h:body>
+</html>

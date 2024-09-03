@@ -104,7 +104,7 @@ public class RequestIdFilters {
      * @return The extracted username or "ANONYMOUS" if the username
      *         or identity is null or empty.
      */
-    public String extractUsername(SecurityIdentity identity) {
+    public static String extractUsername(SecurityIdentity identity) {
         if (identity != null && identity.getPrincipal() != null && identity.getPrincipal().getName() != null) {
             String username = identity.getPrincipal().getName();
             if (!username.trim().isEmpty()) {

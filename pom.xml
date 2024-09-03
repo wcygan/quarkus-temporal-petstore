@@ -27,6 +27,8 @@
         <quarkus.platform.version>3.14.1</quarkus.platform.version>
         <temporal-extension.version>0.0.9</temporal-extension.version>
         <resteasy-problem.version>3.9.0</resteasy-problem.version>
+        <primefaces-quarkus.version>3.14.4</primefaces-quarkus.version>
+        <primeflex.version>3.3.1</primeflex.version>
         <lombok.version>1.18.34</lombok.version>
         <!-- Plugins configuration -->
         <compiler-plugin.version>3.13.0</compiler-plugin.version>
@@ -56,6 +58,30 @@
                 <artifactId>temporal-common</artifactId>
                 <version>1.0.0-SNAPSHOT</version>
             </dependency>
+            <!-- UI -->
+            <dependency>
+                <groupId>com.vaadin</groupId>
+                <artifactId>vaadin-core</artifactId>
+                <version>24.1.1</version>
+            </dependency>
+            <!-- Faces -->
+            <dependency>
+                <groupId>io.quarkiverse.primefaces</groupId>
+                <artifactId>quarkus-primefaces</artifactId>
+                <version>${primefaces-quarkus.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.quarkiverse.primefaces</groupId>
+                <artifactId>quarkus-primefaces-extensions</artifactId>
+                <version>${primefaces-quarkus.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mvnpm</groupId>
+                <artifactId>primeflex</artifactId>
+                <version>${primeflex.version}</version>
+                <scope>runtime</scope>
+            </dependency>
+            <!-- Utilities -->
             <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>

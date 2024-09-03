@@ -108,6 +108,12 @@ There are a few ways to induce failures in the workflow.
 
 These will fail the workflow and trigger the compensating transactions.
 
+## User Interface
+
+Navigate to [http://localhost:8082/](http://localhost:8082/) to view the user interface and submit an order.
+
+[![Petstore UI](https://github.com/melloware/temporal-purchase-order/blob/main/docs/petstore-ui.png)](http://localhost:8082/)
+
 ## Infrastructure Diagram
 
 [![Infrastructure Diagram](https://github.com/melloware/temporal-purchase-order/blob/main/docs/quarkus-remote-workflow.png)]()
