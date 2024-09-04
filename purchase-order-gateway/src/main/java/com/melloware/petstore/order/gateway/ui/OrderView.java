@@ -20,8 +20,10 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jboss.logmanager.MDC;
 
+import com.melloware.petstore.common.models.enums.PaymentType;
 import com.melloware.petstore.common.models.json.CreditCardInfo;
 import com.melloware.petstore.common.models.json.OrderPurchaseRequest;
 import com.melloware.petstore.common.models.json.Product;
@@ -55,99 +57,102 @@ import lombok.Data;
 @RequestScoped
 public class OrderView implements Serializable {
 
-    @Serial
-    private static final long serialVersionUID = 1L;
+        @Serial
+        private static final long serialVersionUID = 1L;
 
-    @Inject
-    PurchaseOrderGatewayResource purchaseOrderGatewayResource;
+        @Inject
+        PurchaseOrderGatewayResource purchaseOrderGatewayResource;
 
-    @NotBlank(message = "SKU is required")
-    private String sku;
+        @NotBlank(message = "SKU is required")
+        private String sku;
 
-    @NotNull(message = "Quantity is required")
-    @Min(1)
-    private Integer quantity;
+        @NotNull(message = "Quantity is required")
+        @Min(1)
+        private Integer quantity;
 
-    @NotNull(message = "Price is required")
-    @DecimalMin("0.0")
-    private BigDecimal price;
+        @NotNull(message = "Price is required")
+        @DecimalMin("0.0")
+        private BigDecimal price;
 
-    @NotBlank(message = "Card holder name is required")
-    private String name;
+        @NotBlank(message = "Card holder name is required")
+        private String name;
 
-    @NotBlank(message = "Email is required")
-    @Email
-    private String email;
+        private String cardType;
 
-    @NotBlank(message = "Card number is required")
-    private String cardNumber;
+        @NotBlank(message = "Email is required")
+        @Email
+        private String email;
 
-    @NotBlank(message = "Expiry date is required")
-    @Pattern(regexp = "(0[1-9]|1[0-2])/\\d{2}", message = "Expiry date must be in MM/YY format")
-    private String expiryDate;
+        @NotBlank(message = "Card number is required")
+        private String cardNumber;
 
-    @NotBlank(message = "CVV is required")
-    @Pattern(regexp = "\\d{3,4}", message = "CVV must be 3 or 4 digits")
-    private String cvv;
+        @NotBlank(message = "Expiry date is required")
+        @Pattern(regexp = "(0[1-9]|1[0-2])/\\d{2}", message = "Expiry date must be in MM/YY format")
+        private String expiryDate;
 
-    /**
-     * Processes the order by generating a unique request ID, capturing request
-     * details,
-     * creating an OrderPurchaseRequest, and initiating the purchase workflow.
-     * 
-     * This method performs the following steps:
-     * 1. Generates a unique request ID.
-     * 2. Retrieves the client's IP address from the incoming request.
-     * 3. Gets the logged-in user (if any).
-     * 4. Retrieves the hostname of the server.
-     * 5. Adds request ID, IP address, user, and hostname to the MDC context for
-     * logging.
-     * 6. Creates an OrderPurchaseRequest with customer and product details.
-     * 7. Initiates the purchase order workflow.
-     * 8. Adds a success message to the FacesContext.
-     * 
-     * @throws RuntimeException if there's an error processing the order purchase
-     *                          request.
-     */
-    public void order() {
-        // Generate a unique request ID
-        String requestId = UUID.randomUUID().toString();
+        @NotBlank(message = "CVV is required")
+        @Pattern(regexp = "\\d{3,4}", message = "CVV must be 3 or 4 digits")
+        private String cvv;
 
-        // Retrieve IP address from the incoming request
-        final HttpServletRequest httpRequest = (HttpServletRequest) FacesContext.getCurrentInstance()
-                .getExternalContext().getRequest();
-        String ipAddress = Objects.toString(httpRequest.getRemoteAddr(), "unknown");
+        /**
+         * Processes the order by generating a unique request ID, capturing request
+         * details,
+         * creating an OrderPurchaseRequest, and initiating the purchase workflow.
+         * 
+         * This method performs the following steps:
+         * 1. Generates a unique request ID.
+         * 2. Retrieves the client's IP address from the incoming request.
+         * 3. Gets the logged-in user (if any).
+         * 4. Retrieves the hostname of the server.
+         * 5. Adds request ID, IP address, user, and hostname to the MDC context for
+         * logging.
+         * 6. Creates an OrderPurchaseRequest with customer and product details.
+         * 7. Initiates the purchase order workflow.
+         * 8. Adds a success message to the FacesContext.
+         * 
+         * @throws RuntimeException if there's an error processing the order purchase
+         *                          request.
+         */
+        public void order() {
+                // Generate a unique request ID
+                String requestId = UUID.randomUUID().toString();
 
-        // Get the logged-in user (if any)
-        String loggedInUser = Objects.toString(httpRequest.getRemoteUser(), "anonymous");
+                // Retrieve IP address from the incoming request
+                final HttpServletRequest httpRequest = (HttpServletRequest) FacesContext.getCurrentInstance()
+                                .getExternalContext().getRequest();
+                String ipAddress = Objects.toString(httpRequest.getRemoteAddr(), "unknown");
 
-        // Get machine name
-        String hostName = RequestIdFilters.getHostname();
+                // Get the logged-in user (if any)
+                String loggedInUser = Objects.toString(httpRequest.getRemoteUser(), "anonymous");
 
-        // Add request ID and IP address to the MDC context
-        MDC.put(RequestIdFilters.REQUEST_ID_MDC_KEY, requestId);
-        MDC.put(RequestIdFilters.REQUEST_IP_MDC_KEY, ipAddress);
-        MDC.put(RequestIdFilters.REQUEST_USER_MDC_KEY, loggedInUser);
-        MDC.put(RequestIdFilters.REQUEST_HOSTNAME_MDC_KEY, hostName);
+                // Get machine name
+                String hostName = RequestIdFilters.getHostname();
 
-        // kick off the workflow
-        OrderPurchaseRequest request = OrderPurchaseRequest.builder()
-                .customerEmail(email)
-                .creditCard(CreditCardInfo.builder()
-                        .cardNumber(cardNumber)
-                        .cardHolderName(name)
-                        .expiryDate(expiryDate)
-                        .cvv(cvv)
-                        .build())
-                .products(List.of(Product.builder()
-                        .sku(sku)
-                        .quantity(quantity)
-                        .price(price.doubleValue())
-                        .build()))
-                .build();
-        purchaseOrderGatewayResource.purchaseOrder(request);
+                // Add request ID and IP address to the MDC context
+                MDC.put(RequestIdFilters.REQUEST_ID_MDC_KEY, requestId);
+                MDC.put(RequestIdFilters.REQUEST_IP_MDC_KEY, ipAddress);
+                MDC.put(RequestIdFilters.REQUEST_USER_MDC_KEY, loggedInUser);
+                MDC.put(RequestIdFilters.REQUEST_HOSTNAME_MDC_KEY, hostName);
 
-        String subject = "Your order has been placed! Please check your email for the confirmation and tracking information.";
-        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(subject));
-    }
+                // kick off the workflow
+                OrderPurchaseRequest request = OrderPurchaseRequest.builder()
+                                .customerEmail(email)
+                                .creditCard(CreditCardInfo.builder()
+                                                .cardNumber(cardNumber)
+                                                .cardHolderName(name)
+                                                .expiryDate(expiryDate)
+                                                .cvv(cvv)
+                                                .type(PaymentType.valueOf(StringUtils.upperCase(cardType)))
+                                                .build())
+                                .products(List.of(Product.builder()
+                                                .sku(sku)
+                                                .quantity(quantity)
+                                                .price(price.doubleValue())
+                                                .build()))
+                                .build();
+                purchaseOrderGatewayResource.purchaseOrder(request);
+
+                String subject = "Your order has been placed! Please check your email for the confirmation and tracking information.";
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(subject));
+        }
 }

@@ -77,8 +77,9 @@
             </div>
 
             <div class="flex justify-content-center flex-wrap">
+                <h:inputHidden value="#{orderView.cardType}" id="hiddenCardType" />
                 <p:commandButton value="Place Order" update="@form" action="#{orderView.order}" icon="pi pi-check" validateClient="true"
-                    class="flex align-items-center justify-content-center" />
+                    class="flex align-items-center justify-content-center" onclick="$('#hiddenCardType').val(Payment.fns.cardType($('#number').val()));" />
             </div>
 
 
