@@ -1,90 +1,91 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="jakarta.faces.facelets" xmlns:f="jakarta.faces.core" xmlns:p="primefaces" xmlns:pe="primefaces.extensions"
     xmlns:h="jakarta.faces.html">
+<f:view contentType="text/html;charset=UTF-8" encoding="UTF-8" transient="true">
+    <h:head>
+        <title>Quarkus Petstore</title>
+        <h:outputScript name="petstore.js" />
+        <h:outputStylesheet name="petstore.css" />
+        <h:outputStylesheet library="_static" name="primeflex/3.3.1/primeflex.min.css" />
+    </h:head>
+    <h:body style="background-color: #D9D9D3;">
 
-<h:head>
-    <title>Quarkus Petstore</title>
-    <h:outputScript name="petstore.js" />
-    <h:outputStylesheet name="petstore.css" />
-    <h:outputStylesheet library="_static" name="primeflex/3.3.1/primeflex.min.css" />
-</h:head>
-<h:body style="background-color: #D9D9D3;">
+        <div class="flex justify-content-center flex-wrap">
+            <p:graphicImage name="quarkus-petstore-logo.png" height="200" width="300" styleClass="flex align-items-center justify-content-center" />
+        </div>
 
-    <div class="flex justify-content-center flex-wrap">
-        <p:graphicImage name="quarkus-petstore-logo.png" height="200" width="300" styleClass="flex align-items-center justify-content-center" />
-    </div>
+        <h:form id="frmPurchaseOrder" prependId="false">
+            <p:messages id="msgs" closable="true" />
 
-    <h:form id="frmPurchaseOrder" prependId="false">
-        <p:messages id="msgs" closable="true" />
+            <p:panel id="pnl" header="Order Form">
 
-        <p:panel id="pnl" header="Order Form">
-
-            <div class="formgrid grid">
-                <div class="field col">
-                    <p:outputLabel for="@next" value="SKU:" />
-                    <p:inputText value="#{orderView.sku}" styleClass="w-full" />
-                </div>
-                <div class="field col">
-                    <p:outputLabel for="@next" value="Quantity:" />
-                    <p:inputNumber value="#{orderView.quantity}" styleClass="w-full" inputStyleClass="w-full" min="0" max="100" />
-                </div>
-                <div class="field col">
-                    <p:outputLabel for="@next" value="Price:" />
-                    <p:inputNumber value="#{orderView.price}" styleClass="w-full" inputStyleClass="w-full" min="0" max="2000" decimalPlaces="2" symbol="$ "
-                        symbolPosition="p" />
-                </div>
-            </div>
-
-            <p:divider align="center" type="solid">
-                <b>Credit Card Information</b>
-            </p:divider>
-
-            <div class="grid">
-                <div class="col-6">
-                    <div class="formgrid grid">
-                        <div class="field col-12 md:col-6">
-                            <p:outputLabel for="name" value="Full Name:" />
-                            <p:inputText id="name" placeholder="Full name" styleClass="w-full" value="#{orderView.name}" />
-                        </div>
-                        <div class="field col-12 md:col-6">
-                            <p:outputLabel for="email" value="Email:" />
-                            <p:inputText id="email" placeholder="your@email.org" styleClass="w-full" value="#{orderView.email}" />
-                        </div>
-                        <div class="field col-12 md:col-4">
-                            <p:outputLabel for="number" value="Card Number:" />
-                            <p:inputText id="number" placeholder="Card number" inputmode="numeric" styleClass="w-full" value="#{orderView.cardNumber}" />
-                        </div>
-
-                        <div class="field col-12 md:col-4">
-                            <p:outputLabel for="month" value="Expiry:" />
-                            <div>
-                                <p:datePicker id="month" widgetVar="monthPicker" view="month" pattern="MM/yy" yearNavigator="true" yearRange="2000:2050"
-                                    placeholder="MM/YY" inputStyleClass="w-full" styleClass="w-full" required="true" requiredMessage="Expiry date is required"
-                                    onchange="$('#expiry').val(PF('monthPicker').input.val()); $('#expiry')[0].dispatchEvent(new Event('change'));" />
-                                <!-- Hide Expiration field so we can use PF MonthPicker -->
-                                <p:inputText id="expiry" placeholder="MM/YY" inputmode="numeric" style="display:none" value="#{orderView.expiryDate}" />
-                            </div>
-                        </div>
-                        <div class="field col-12 md:col-4">
-                            <p:outputLabel for="cvc" value="CVV:" />
-                            <p:inputText id="cvc" placeholder="CVV" inputmode="numeric" inputStyleClass="w-full" styleClass="w-full" value="#{orderView.cvv}" />
-                        </div>
+                <div class="formgrid grid">
+                    <div class="field col">
+                        <p:outputLabel for="@next" value="SKU:" />
+                        <p:inputText value="#{orderView.sku}" styleClass="w-full" />
+                    </div>
+                    <div class="field col">
+                        <p:outputLabel for="@next" value="Quantity:" />
+                        <p:inputNumber value="#{orderView.quantity}" styleClass="w-full" inputStyleClass="w-full" min="0" max="100" />
+                    </div>
+                    <div class="field col">
+                        <p:outputLabel for="@next" value="Price:" />
+                        <p:inputNumber value="#{orderView.price}" styleClass="w-full" inputStyleClass="w-full" min="0" max="2000" decimalPlaces="2" symbol="$ "
+                            symbolPosition="p" />
                     </div>
                 </div>
-                <div class="col-6">
-                    <pe:creditCard id="creditCard" labelMonthYear="MM/YY" placeholderExpiry="**/**" placeholderName="Optimus Prime" />
+
+                <p:divider align="center" type="solid">
+                    <b>Credit Card Information</b>
+                </p:divider>
+
+                <div class="grid">
+                    <div class="col-6">
+                        <div class="formgrid grid">
+                            <div class="field col-12 md:col-6">
+                                <p:outputLabel for="name" value="Full Name:" />
+                                <p:inputText id="name" placeholder="Full name" styleClass="w-full" value="#{orderView.name}" />
+                            </div>
+                            <div class="field col-12 md:col-6">
+                                <p:outputLabel for="email" value="Email:" />
+                                <p:inputText id="email" placeholder="your@email.org" styleClass="w-full" value="#{orderView.email}" />
+                            </div>
+                            <div class="field col-12 md:col-4">
+                                <p:outputLabel for="number" value="Card Number:" />
+                                <p:inputText id="number" placeholder="Card number" inputmode="numeric" styleClass="w-full" value="#{orderView.cardNumber}" />
+                            </div>
+
+                            <div class="field col-12 md:col-4">
+                                <p:outputLabel for="month" value="Expiry:" />
+                                <div>
+                                    <p:datePicker id="month" widgetVar="monthPicker" view="month" pattern="MM/yy" yearNavigator="true" yearRange="2000:2050"
+                                        placeholder="MM/YY" inputStyleClass="w-full" styleClass="w-full" required="true"
+                                        requiredMessage="Expiry date is required"
+                                        onchange="$('#expiry').val(PF('monthPicker').input.val()); $('#expiry')[0].dispatchEvent(new Event('change'));" />
+                                    <!-- Hide Expiration field so we can use PF MonthPicker -->
+                                    <p:inputText id="expiry" placeholder="MM/YY" inputmode="numeric" style="display:none" value="#{orderView.expiryDate}" />
+                                </div>
+                            </div>
+                            <div class="field col-12 md:col-4">
+                                <p:outputLabel for="cvc" value="CVV:" />
+                                <p:inputText id="cvc" placeholder="CVV" inputmode="numeric" inputStyleClass="w-full" styleClass="w-full"
+                                    value="#{orderView.cvv}" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <pe:creditCard id="creditCard" labelMonthYear="MM/YY" placeholderExpiry="**/**" placeholderName="Optimus Prime" />
+                    </div>
                 </div>
-            </div>
 
-            <div class="flex justify-content-center flex-wrap">
-                <h:inputHidden value="#{orderView.cardType}" id="hiddenCardType" />
-                <p:commandButton value="Place Order" update="@form" action="#{orderView.order}" icon="pi pi-check" validateClient="true"
-                    class="flex align-items-center justify-content-center" onclick="$('#hiddenCardType').val(Payment.fns.cardType($('#number').val()));" />
-            </div>
-
-
-        </p:panel>
-    </h:form>
-</h:body>
+                <div class="flex justify-content-center flex-wrap">
+                    <h:inputHidden value="#{orderView.cardType}" id="hiddenCardType" />
+                    <p:commandButton value="Place Order" update="@form" action="#{orderView.order}" icon="pi pi-check" validateClient="true"
+                        class="flex align-items-center justify-content-center" onclick="$('#hiddenCardType').val(Payment.fns.cardType($('#number').val()));" />
+                </div>
+            </p:panel>
+        </h:form>
+    </h:body>
+</f:view>
 
 </html>

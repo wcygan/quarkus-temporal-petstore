@@ -24,7 +24,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <skipITs>true</skipITs>
         <!-- Quarkus configuration -->
-        <quarkus.platform.version>3.14.1</quarkus.platform.version>
+        <quarkus.platform.version>3.14.2</quarkus.platform.version>
         <temporal-extension.version>0.0.9</temporal-extension.version>
         <resteasy-problem.version>3.9.0</resteasy-problem.version>
         <primefaces-quarkus.version>3.14.4</primefaces-quarkus.version>
