@@ -117,3 +117,8 @@ Navigate to [http://localhost:8082/](http://localhost:8082/) to view the user in
 ## Infrastructure Diagram
 
 [![Infrastructure Diagram](https://github.com/melloware/temporal-purchase-order/blob/main/docs/quarkus-remote-workflow.png)]()
+
+## State Transition Diagram
+
+[![State Transition Diagram](https://github.com/melloware/quarkus-temporal-petstore/blob/main/docs/state-transition.png)]()
+
