@@ -8,6 +8,7 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/Apache-2.0)
 
 Quarkus Temporal Petstore is a comprehensive demonstration using Quarkus and Temporal. It simulates placing a new order on your Petstore website and fulfilling it using a microservice architecture.
+This use case has been featured on [Temporal's Code Exchange](https://temporal.io/code-exchange/quarkus-temporal) catalog.
 
 While the code is surprisingly simple, under the hood this is using:
 
