@@ -50,7 +50,7 @@ The following microservices have been created to simulate this system:
 | Order Service          | Tracking the order in the database.                                                       | 8090 | [http://localhost:8090/q/dev-ui/](http://localhost:8090/q/dev-ui/) |
 | Payment Service        | Validating the payment such as credit card.                                               | 8086 | [http://localhost:8086/q/dev-ui/](http://localhost:8086/q/dev-ui/) |
 | Warehouse Service      | Validating inventory availability and decrementing inventory.                             | 8989 | [http://localhost:8989/q/dev-ui/](http://localhost:8989/q/dev-ui/) |
-| Shipment Service       | Registering the order with a shipment provider and getting a tracking number.             | 8989 | [http://localhost:8877/q/dev-ui/](http://localhost:8877/q/dev-ui/) |
+| Shipment Service       | Registering the order with a shipment provider and getting a tracking number.             | 8877 | [http://localhost:8877/q/dev-ui/](http://localhost:8877/q/dev-ui/) |
 
 ## Docker Compose
 
